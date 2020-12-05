@@ -1,19 +1,15 @@
 package com.example.snake3d_new.openGL.game.logik.snakeAndFood;
 
-import android.util.Log;
-
 import com.example.snake3d_new.openGL.game.logik.Draw;
-import com.example.snake3d_new.openGL.game.logik.WhatProgram;
 import com.example.snake3d_new.openGL.game.logik.snakeAndFood.utils.Coord;
-import com.example.snake3d_new.openGL.game.utils.MatrixEnum;
 
+import static com.example.snake3d_new.openGL.game.logik.InitGL.KUB;
 import static com.example.snake3d_new.openGL.game.utils.Constants.X_BEGIN;
 import static com.example.snake3d_new.openGL.game.utils.Constants.Y_BEGIN;
 import static com.example.snake3d_new.openGL.game.utils.Constants.Z_BEGIN;
 import static com.example.snake3d_new.openGL.game.utils.Constants.freedom;
 import static com.example.snake3d_new.openGL.game.utils.Constants.howMuchFreedom;
 import static com.example.snake3d_new.openGL.game.utils.MatrixEnum.translate;
-import static com.example.snake3d_new.openGL.game.utils.Order.KUB;
 
 public class DrawFood {
     public Coord food;

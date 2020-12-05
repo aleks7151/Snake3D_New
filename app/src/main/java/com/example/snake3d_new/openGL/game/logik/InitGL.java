@@ -3,8 +3,9 @@ package com.example.snake3d_new.openGL.game.logik;
 import android.content.res.AssetManager;
 import android.opengl.Matrix;
 
-import com.example.snake3d_new.openGL.game.utils.MeshUtils;
-import com.example.snake3d_new.openGL.game.utils.NewMeshUtils;
+import com.example.snake3d_new.openGL.game.model.MeshObj;
+import com.example.snake3d_new.openGL.game.model.MeshDae;
+import com.example.snake3d_new.openGL.game.model.Model;
 import com.example.snake3d_new.openGL.game.utils.Order;
 import com.example.snake3d_new.openGL.game.utils.ShaderUtils;
 
@@ -102,6 +103,11 @@ public class InitGL {
 
     public IntBuffer shadowFBO = IntBuffer.allocate(1);
     public IntBuffer shadowMap = IntBuffer.allocate(1);
+
+    public static Model KUB;
+    public static Model PLANE;
+    public static Model POINT;
+    public static Model TEST_MODEL;
 
     public InitGL(int width, int height){
         this.width = width;
@@ -267,17 +273,17 @@ public class InitGL {
     }
 
     private void prepareData() {
-        float[][] kub = MeshUtils.getModel(assets, "models/kub.obj");
-        float[][] plane = MeshUtils.getModel(assets, "models/plane.obj");
-        float[][] point = MeshUtils.getPoint();
-        float[][] testModel = NewMeshUtils.getModel(assets, "models/firstDae.xml");
-        float[] normal = getColorNormalAndTexture(kub[1], plane[1], point[1], testModel[1]);
-        float[] texture = getColorNormalAndTexture(kub[2], plane[2], point[2], testModel[2]);
-        float[] mesh = getMesh(kub[0], plane[0], point[0], testModel[0]);
-        Order.KUB = 0;
-        Order.PLANE = 1;
-        Order.POINT = 2;
-        Order.TEST = 3;
+        KUB = MeshObj.getModel(assets, "models/kub.obj");
+        PLANE = MeshObj.getModel(assets, "models/plane.obj");
+        POINT = MeshObj.getPoint();
+        TEST_MODEL = MeshDae.getModel(assets, "models/firstDae.xml");
+        float[] normal = getColorNormalAndTexture(KUB.normals, PLANE.normals, POINT.normals, TEST_MODEL.normals);
+        float[] texture = getColorNormalAndTexture(KUB.colors, PLANE.colors, POINT.colors, TEST_MODEL.colors);
+        float[] mesh = getMesh(KUB.positions, PLANE.positions, POINT.positions, TEST_MODEL.positions);
+        KUB.order = 0;
+        PLANE.order = 1;
+        POINT.order = 2;
+        TEST_MODEL.order = 3;
         vertexPut(mesh, normal, texture);
     }
 

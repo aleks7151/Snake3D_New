@@ -7,6 +7,7 @@ import android.view.MotionEvent;
 import com.example.snake3d_new.openGL.game.logik.snakeAndFood.DrawFood;
 import com.example.snake3d_new.openGL.game.logik.snakeAndFood.DrawSnake;
 import com.example.snake3d_new.openGL.game.logik.snakeAndFood.SnakeBackend;
+import com.example.snake3d_new.openGL.game.model.Model;
 import com.example.snake3d_new.openGL.game.utils.MatrixEnum;
 
 import static android.opengl.GLES20.GL_BACK;
@@ -29,6 +30,9 @@ import static android.opengl.GLES20.glUniform4f;
 import static android.opengl.GLES20.glUniformMatrix4fv;
 import static android.opengl.GLES20.glUseProgram;
 import static android.opengl.GLES30.glBindVertexArray;
+import static com.example.snake3d_new.openGL.game.logik.InitGL.PLANE;
+import static com.example.snake3d_new.openGL.game.logik.InitGL.POINT;
+import static com.example.snake3d_new.openGL.game.logik.InitGL.TEST_MODEL;
 import static com.example.snake3d_new.openGL.game.logik.WhatProgram.eProgramId;
 import static com.example.snake3d_new.openGL.game.logik.WhatProgram.eProgramShadow;
 import static com.example.snake3d_new.openGL.game.utils.Constants.AMOUNT_X;
@@ -40,9 +44,6 @@ import static com.example.snake3d_new.openGL.game.utils.Constants.freedom;
 import static com.example.snake3d_new.openGL.game.utils.Constants.howMuchFreedom;
 import static com.example.snake3d_new.openGL.game.utils.MatrixEnum.rotate;
 import static com.example.snake3d_new.openGL.game.utils.MatrixEnum.scale;
-import static com.example.snake3d_new.openGL.game.utils.Order.PLANE;
-import static com.example.snake3d_new.openGL.game.utils.Order.POINT;
-import static com.example.snake3d_new.openGL.game.utils.Order.TEST;
 import static com.example.snake3d_new.openGL.game.utils.Order.getBegin;
 import static com.example.snake3d_new.openGL.game.utils.Order.getCount;
 import static com.example.snake3d_new.openGL.game.utils.MatrixEnum.translate;
@@ -91,16 +92,16 @@ public class Draw {
         }
     }
 
-    public void drawTriangles(int object){
-        glDrawArrays(GL_TRIANGLES, getBegin(object), getCount(object));
+    public void drawTriangles(Model model){
+        glDrawArrays(GL_TRIANGLES, getBegin(model), getCount(model));
     }
 
-    public void drawLines(int object){
-        glDrawArrays(GL_LINES, getBegin(object), getCount(object));
+    public void drawLines(Model model){
+        glDrawArrays(GL_LINES, getBegin(model), getCount(model));
     }
 
-    public void drawPoints(int object){
-        glDrawArrays(GL_POINTS, getBegin(object), getCount(object));
+    public void drawPoints(Model model){
+        glDrawArrays(GL_POINTS, getBegin(model), getCount(model));
     }
 
     public void setColor(float r, float g, float b){
@@ -142,7 +143,7 @@ public class Draw {
         rotateM(ttt, 0, 0, 1);
         ttt += 0.5f;
         bindMatrix();
-        drawTriangles(TEST);
+        drawTriangles(TEST_MODEL);
         setIdentityM(translate, rotate);
         bindMatrix();
     }

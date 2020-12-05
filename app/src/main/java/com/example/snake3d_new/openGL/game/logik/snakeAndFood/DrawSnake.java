@@ -8,7 +8,7 @@ import com.example.snake3d_new.openGL.game.logik.snakeAndFood.utils.Coord;
 
 import java.util.List;
 
-import static com.example.snake3d_new.openGL.game.logik.WhatProgram.eProgramId;
+import static com.example.snake3d_new.openGL.game.logik.InitGL.KUB;
 import static com.example.snake3d_new.openGL.game.logik.WhatProgram.eProgramShadow;
 import static com.example.snake3d_new.openGL.game.logik.snakeAndFood.utils.Direction.DOWN;
 import static com.example.snake3d_new.openGL.game.logik.snakeAndFood.utils.Direction.LEFT;
@@ -18,7 +18,6 @@ import static com.example.snake3d_new.openGL.game.utils.Constants.X_BEGIN;
 import static com.example.snake3d_new.openGL.game.utils.Constants.Y_BEGIN;
 import static com.example.snake3d_new.openGL.game.utils.Constants.Z_BEGIN;
 import static com.example.snake3d_new.openGL.game.utils.MatrixEnum.translate;
-import static com.example.snake3d_new.openGL.game.utils.Order.KUB;
 
 public class DrawSnake {
     private Draw draw;

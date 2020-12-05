@@ -1,4 +1,4 @@
-package com.example.snake3d_new.openGL.game.utils;
+package com.example.snake3d_new.openGL.game.model;
 
 import android.content.res.AssetManager;
 import android.util.Log;
@@ -10,37 +10,34 @@ import java.util.List;
 import java.util.Scanner;
 
 //Класс для получения модели
-public class MeshUtils {
-    public static float[][] getModel(AssetManager assets, String path){
+public class MeshObj {
+    public static Model getModel(AssetManager assets, String path){
         List<Float> mesh = new ArrayList<>();
         List<Float> normal = new ArrayList<>();
         List<Float> texture = new ArrayList<>();
-        try {
-            Scanner scanner = null;
-            try {
-                readInTry(scanner, assets.open(path), mesh, normal, texture);
-            } finally {
-                if (scanner != null)
-                    scanner.close();
-            }
+        try (Scanner scanner = new Scanner(assets.open(path))){
+            readInTry(scanner, mesh, normal, texture);
         } catch (IOException e){
             Log.d("MyLog", e.toString());
         }
-        float[][] model = new float[3][mesh.size()];
+        Model model = new Model();
+        model.setSize(mesh.size());
+        model.positions = new float[model.getSize() * 3];
+        model.normals = new float[model.getSize() * 3];
+        model.colors = new float[model.getSize() * 3];
         for (int i = 0; i < mesh.size(); i++)
-            model[0][i] = mesh.get(i);
+            model.positions[i] = mesh.get(i);
         for (int i = 0; i < normal.size(); i++)
-            model[1][i] = normal.get(i);
+            model.normals[i] = normal.get(i);
         for (int i = 0; i < texture.size(); i++)
-            model[2][i] = texture.get(i);
+            model.colors[i] = texture.get(i);
         return model;
     }
 
-    private static void readInTry(Scanner scanner, InputStream inputStream, List<Float> mesh, List<Float> normal, List<Float> texture) {
+    private static void readInTry(Scanner scanner, List<Float> mesh, List<Float> normal, List<Float> texture) {
         List<Float> points = new ArrayList<>();
         List<Float> firstNormals = new ArrayList<>();
         List<Float> firstTexture = new ArrayList<>();
-        scanner = new Scanner(inputStream);
         String str = "null";
         while (!str.equals("v"))
             str = scanner.next();
@@ -96,12 +93,17 @@ public class MeshUtils {
         }
     }
 
-    public static float[][] getPoint() {
+    public static Model getPoint() {
         float[][] point = new float[][]{
                 {0, 0, 0},
                 {0, 0, 1},
                 {0, 0, 0},
         };
-        return point;
+        Model model = new Model();
+        model.setSize(3);
+        model.positions = point[0];
+        model.normals = point[1];
+        model.colors = point[2];
+        return model;
     }
 }
