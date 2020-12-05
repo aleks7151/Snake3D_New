@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Snake3D_New</string>
+    <string name="exit">Exit</string>
+    <string name="settings">Settings</string>
+    <string name="start">Start</string>
+    <string name="shop">Shop</string>
+</resources>
