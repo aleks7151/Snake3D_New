@@ -25,7 +25,7 @@ public class Dae {
         model.setSize(order.size());
         model.positions = new float[model.getSize() * 3];
         model.normals = new float[model.getSize() * 3];
-        model.colors = new float[model.getSize() * 3];
+        model.colors = new float[model.getSize() * 2];
         for (int i = 0; i < order.size(); i++){
             float[] point = points.get(
                     order.get(i)[0]
@@ -38,7 +38,7 @@ public class Dae {
             );
             System.arraycopy(point, 0, model.positions, i * 3, point.length);
             System.arraycopy(normal, 0, model.normals, i * 3, normal.length);
-            System.arraycopy(color, 0, model.colors, i * 3, color.length);
+            System.arraycopy(color, 0, model.colors, i * 2, color.length);
         }
     }
 
@@ -60,7 +60,6 @@ public class Dae {
         if (!model.checkSize(amountOfBones.size()))
             Log.d("MyLog", "Не совпадает количество точек в geometries и controllers. Size: " + model.getSize() + "  newSie: " + amountOfBones.size());
         ///////////////!!!!!!!!!!!Полный рефактор!! Подумай, почему блять
-        ///////////////!!!!!!!!!!!Реализовать DrawElements, потому что так удобней!!
         model.setBonesAmount(boneMatrixBegin.size());
         model.indexes = new int[amountOfBones.size() * 4];
         model.weights = new float[amountOfBones.size() * 4];

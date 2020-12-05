@@ -69,4 +69,18 @@ public class MeshDae {
                 findData(childs.item(i).getChildNodes(), list, strings);
         }
     }
+
+    public static Model getPoint() {
+        float[][] point = new float[][]{
+                {0, 0, 0},
+                {0, 0, 1},
+                {0, 0, 0},
+        };
+        Model model = new Model();
+        model.setSize(3);
+        model.positions = point[0];
+        model.normals = point[1];
+        model.colors = point[2];
+        return model;
+    }
 }
