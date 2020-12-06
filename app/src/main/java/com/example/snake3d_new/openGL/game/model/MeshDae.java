@@ -8,9 +8,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -77,10 +75,10 @@ public class MeshDae {
                 {0, 0, 0},
         };
         Model model = new Model();
-        model.setSize(3);
-        model.positions = point[0];
-        model.normals = point[1];
-        model.colors = point[2];
+        model.setPointsAmount(3);
+        model.position = point[0];
+        model.normal = point[1];
+        model.color = point[2];
         return model;
     }
 }

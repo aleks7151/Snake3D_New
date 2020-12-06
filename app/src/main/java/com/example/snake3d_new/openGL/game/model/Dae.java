@@ -8,74 +8,41 @@ import java.util.Scanner;
 
 public class Dae {
     static void getGeometries(Model model, List<String> listGeometries) {
-        List<float[]> points = new ArrayList<>();
-        List<float[]> normals = new ArrayList<>();
-        List<float[]> colors = new ArrayList<>();//Использоваться не будет, но это, возможно, пока
-        List<int[]> order = new ArrayList<>();
+        model.position = new ArrayList<>();
+        model.normal = new ArrayList<>();
+        model.color = new ArrayList<>();//Использоваться не будет, но это, возможно, пока
+        model.orderMesh = new ArrayList<>();
         String stringPosition = listGeometries.get(0);
         String stringNormal = listGeometries.get(1);
-        String stringColor = listGeometries.get(3);//Использоваться не будет, но это, возможно, пока
+        String stringColor = listGeometries.get(2);//Использоваться не будет, но это, возможно, пока
         String stringOrder = listGeometries.get(3);
 
-        toFloatArrayFromString(points, stringPosition, 3);
-        toFloatArrayFromString(normals, stringNormal, 3);
-        toFloatArrayFromString(colors, stringColor, 2);
-        toIntArrayFromString(order, stringOrder, 3);
+        toFloatArrayFromString(model.position, stringPosition, model.STRIDE_POSITION);
+        toFloatArrayFromString(model.normal, stringNormal, model.STRIDE_NORMAL);
+        toFloatArrayFromString(model.color, stringColor, model.STRIDE_COLOR);
+        toIntArrayFromString(model.orderMesh, stringOrder, model.STRIDE_ORDER);
 
-        model.setSize(order.size());
-        model.positions = new float[model.getSize() * 3];
-        model.normals = new float[model.getSize() * 3];
-        model.colors = new float[model.getSize() * 2];
-        for (int i = 0; i < order.size(); i++){
-            float[] point = points.get(
-                    order.get(i)[0]
-            );
-            float[] normal = normals.get(
-                    order.get(i)[1]
-            );
-            float[] color = colors.get(
-                    order.get(i)[2]
-            );
-            System.arraycopy(point, 0, model.positions, i * 3, point.length);
-            System.arraycopy(normal, 0, model.normals, i * 3, normal.length);
-            System.arraycopy(color, 0, model.colors, i * 2, color.length);
-        }
+        model.setPointsAmount(model.orderMesh.size());
     }
 
     static void getControllers(Model model, List<String> listControllers) {
-        List<float[]> boneMatrixBegin = new ArrayList<>();
-        List<Float> weights = new ArrayList<>();
-        List<Integer> amountOfBones = new ArrayList<>();
-        List<int[][]> jointsWeights = new ArrayList<>();
+        model.boneMatrixBegin = new ArrayList<>();
+        model.weight = new ArrayList<>();
+        model.amountOfBone = new ArrayList<>();
+        model.jointWeight = new ArrayList<>();
         String stringBoneMatrixBegin = listControllers.get(0);
         String stringWeights= listControllers.get(1);
         String stringAmountOfBones = listControllers.get(2);
         String stringJointsWeights = listControllers.get(3);
 
-        toFloatArrayFromString(boneMatrixBegin, stringBoneMatrixBegin, 16);
-        toFloatFromString(weights, stringWeights);
-        toIntFromString(amountOfBones, stringAmountOfBones);
-        toIntArrayFromStringAndAmountBones(jointsWeights, stringJointsWeights, amountOfBones);
+        toFloatArrayFromString(model.boneMatrixBegin, stringBoneMatrixBegin, model.STRIDE_BONE_MATRIX_BEGIN);
+        toFloatFromString(model.weight, stringWeights);
+        toIntFromString(model.amountOfBone, stringAmountOfBones);
+        toIntArrayFromStringAndAmountBones(model.jointWeight, stringJointsWeights, model.amountOfBone);
 
-        if (!model.checkSize(amountOfBones.size()))
-            Log.d("MyLog", "Не совпадает количество точек в geometries и controllers. Size: " + model.getSize() + "  newSie: " + amountOfBones.size());
-        ///////////////!!!!!!!!!!!Полный рефактор!! Подумай, почему блять
-        model.setBonesAmount(boneMatrixBegin.size());
-        model.indexes = new int[amountOfBones.size() * 4];
-        model.weights = new float[amountOfBones.size() * 4];
-        for (int i = 0; i < amountOfBones.size(); i++){
-            int[][] array = jointsWeights.get(i);
-            for (int k = 0; k < 4/*Потому что vec4*/; k++){
-                if (k < array[0].length)
-                    model.indexes[i * 4 + k] = array[0][k];
-                else
-                    model.indexes[i * 4 + k] = -1;
-                if (k < array[1].length)
-                    model.weights[i * 4 + k] = array[1][k];
-                else
-                    model.weights[i * 4 + k] = -1;
-            }
-        }
+        if (!model.checkPointsAmount(model.amountOfBone.size()))
+            Log.d("MyLog", "Не совпадает количество точек в geometries и controllers. Size: " + model.getPointsAmount() + "  newSie: " + model.amountOfBone.size());
+        model.setBonesAmount(model.boneMatrixBegin.size());
     }
 
     public static void getAnimations(Model model, List<String> listAnimations) {

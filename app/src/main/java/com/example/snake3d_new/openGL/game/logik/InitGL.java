@@ -276,9 +276,9 @@ public class InitGL {
         PLANE = MeshDae.getModel(assets, "models/plane.dae");
         POINT = MeshDae.getPoint();
         TEST_MODEL = MeshDae.getModel(assets, "models/firstDae.dae");
-        float[] normal = getColorNormalAndTexture(KUB.normals, PLANE.normals, POINT.normals, TEST_MODEL.normals);
-        float[] texture = getColorNormalAndTexture(KUB.colors, PLANE.colors, POINT.colors, TEST_MODEL.colors);
-        float[] mesh = getMesh(KUB.positions, PLANE.positions, POINT.positions, TEST_MODEL.positions);
+        float[] normal = getColorNormalAndTexture(KUB.normal, PLANE.normal, POINT.normal, TEST_MODEL.normal);
+        float[] texture = getColorNormalAndTexture(KUB.color, PLANE.color, POINT.color, TEST_MODEL.color);
+        float[] mesh = getMesh(KUB.position, PLANE.position, POINT.position, TEST_MODEL.position);
         KUB.order = 0;
         PLANE.order = 1;
         POINT.order = 2;
