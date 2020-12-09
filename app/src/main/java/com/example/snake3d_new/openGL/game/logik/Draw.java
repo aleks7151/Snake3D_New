@@ -7,8 +7,11 @@ import android.view.MotionEvent;
 import com.example.snake3d_new.openGL.game.logik.snakeAndFood.DrawFood;
 import com.example.snake3d_new.openGL.game.logik.snakeAndFood.DrawSnake;
 import com.example.snake3d_new.openGL.game.logik.snakeAndFood.SnakeBackend;
+import com.example.snake3d_new.openGL.game.model.Bone;
 import com.example.snake3d_new.openGL.game.model.Model;
 import com.example.snake3d_new.openGL.game.utils.MatrixEnum;
+
+import java.util.Map;
 
 import static android.opengl.GLES20.GL_BACK;
 import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
@@ -26,6 +29,7 @@ import static android.opengl.GLES20.glBindTexture;
 import static android.opengl.GLES20.glClear;
 import static android.opengl.GLES20.glCullFace;
 import static android.opengl.GLES20.glDrawArrays;
+import static android.opengl.GLES20.glGetUniformLocation;
 import static android.opengl.GLES20.glUniform4f;
 import static android.opengl.GLES20.glUniformMatrix4fv;
 import static android.opengl.GLES20.glUseProgram;
@@ -138,6 +142,7 @@ public class Draw {
         drawPlane();
         drawFreedom();
 
+        testAnimationFunc();
         setColor(1, 0, 0);
         translateM(0, 0, 7);
         rotateM(ttt, 0, 1, 0);
@@ -150,6 +155,37 @@ public class Draw {
         bindMatrix();
     }
     float ttt = 0;
+
+    private void testAnimationFunc() {
+        for (Map.Entry<String, Bone> entry : TEST_MODEL.mapBones.entrySet())
+            entry.getValue().setNeedUpdate(true);
+        for (Map.Entry<String, Bone> entry : TEST_MODEL.mapBones.entrySet()){
+            Bone bone = entry.getValue();
+            if (bone.getNeedUpdate()){//Если требуется апдейт матрицы
+                testRekurs(TEST_MODEL.mapBones, bone);
+            }
+        }
+    }
+
+    private void testRekurs(Map<String, Bone> map, Bone bone){
+        if (bone.getParent() == null){//Если рут кость
+            float[] matrix = new float[16];
+            Matrix.multiplyMM(matrix, 0, bone.getInvertMatrix(), 0, bone.getAnimMatrix().get(1), 0);
+            bone.setMatrixNow(matrix);
+            glUniformMatrix4fv(glGetUniformLocation(initGL.programId, "boneMatrix[" + bone.getIndexBone() +  "]"), 1, false, matrix, 0);
+            bone.setNeedUpdate(false);
+        }
+        else {
+            if (bone.getParent().getNeedUpdate())
+                testRekurs(map, bone.getParent());
+            float[] matrix = new float[16];
+            Matrix.multiplyMM(matrix, 0, bone.getParent().getMatrixNow(), 0, bone.getInvertMatrix(), 0);
+            Matrix.multiplyMM(matrix, 0, matrix, 0, bone.getAnimMatrix().get(1), 0);
+            bone.setMatrixNow(matrix);
+            glUniformMatrix4fv(glGetUniformLocation(initGL.programId, "boneMatrix[" + bone.getIndexBone() +  "]"), 1, false, matrix, 0);
+            bone.setNeedUpdate(false);
+        }
+    }
 
     private void drawPlane() {
         setColor(0.5f, 0.5f, 0.5f);

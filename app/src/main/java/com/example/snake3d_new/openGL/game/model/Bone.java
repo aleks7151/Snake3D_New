@@ -12,10 +12,15 @@ public class Bone {
     private List<Float> time = null;
     private List<float[]> animMatrix = null;
 
+    private boolean needUpdate = true;
+    private float[] matrixNow = null;
 
-    public Bone(String name, float[] invertMatrix){
+    private int indexBone;
+
+    public Bone(String name, float[] invertMatrix, int indexBone){
         this.name = name;
         this.invertMatrix = invertMatrix;
+        this.indexBone = indexBone;
     }
 
     public String getName() {
@@ -56,6 +61,26 @@ public class Bone {
 
     public Bone getParent() {
         return parent;
+    }
+
+    public void setNeedUpdate(boolean needUpdate) {
+        this.needUpdate = needUpdate;
+    }
+
+    public boolean getNeedUpdate(){
+        return needUpdate;
+    }
+
+    public void setMatrixNow(float[] matrixNow) {
+        this.matrixNow = matrixNow;
+    }
+
+    public float[] getMatrixNow() {
+        return matrixNow;
+    }
+
+    public int getIndexBone() {
+        return indexBone;
     }
 
     @Override

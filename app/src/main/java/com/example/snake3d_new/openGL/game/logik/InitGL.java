@@ -22,6 +22,7 @@ import static android.opengl.GLES20.GL_DEPTH_COMPONENT;
 import static android.opengl.GLES20.GL_DEPTH_TEST;
 import static android.opengl.GLES20.GL_FLOAT;
 import static android.opengl.GLES20.GL_FRAMEBUFFER;
+import static android.opengl.GLES20.GL_INT;
 import static android.opengl.GLES20.GL_NEAREST;
 import static android.opengl.GLES20.GL_NONE;
 import static android.opengl.GLES20.GL_STATIC_DRAW;
@@ -79,6 +80,8 @@ public class InitGL {
     private FloatBuffer vertexData;
     private FloatBuffer vertexNormal;
     private FloatBuffer vertexTexture;
+    private FloatBuffer vertexWeight;
+    private IntBuffer vertexIndex;
 
     private AssetManager assets;
 
@@ -215,7 +218,7 @@ public class InitGL {
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    private void vertexAttribPointer(IntBuffer VAO, FloatBuffer buffer, int sizeVec, int order){
+    private void vertexAttribPointerFloat(IntBuffer VAO, FloatBuffer buffer, int sizeVec, int order){
         IntBuffer VBO = IntBuffer.allocate(1);
 
         glGenBuffers(1, VBO);
@@ -232,13 +235,32 @@ public class InitGL {
         glBindVertexArray(0);
     }
 
+    private void vertexAttribPointerInt(IntBuffer VAO, IntBuffer buffer, int sizeVec, int order){
+        IntBuffer VBO = IntBuffer.allocate(1);
+
+        glGenBuffers(1, VBO);
+        glBindVertexArray(VAO.get(0));
+        glBindBuffer(GL_ARRAY_BUFFER, VBO.get());
+
+        buffer.position(0);
+        glBufferData(GL_ARRAY_BUFFER, buffer.limit() * 4, buffer, GL_STATIC_DRAW);
+
+        glVertexAttribPointer(order, sizeVec, GL_INT, false, sizeVec * 4, 0);
+        glEnableVertexAttribArray(order);
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+    }
+
     private void bindDataProgramId() {
         glUseProgram(programId);
 
         glGenVertexArrays(1, vaoMain);
-        vertexAttribPointer(vaoMain, vertexData, 3, 0);
-        vertexAttribPointer(vaoMain, vertexNormal, 3, 1);
-        vertexAttribPointer(vaoMain, vertexTexture, 2, 2);
+        vertexAttribPointerFloat(vaoMain, vertexData, 3, 0);
+        vertexAttribPointerFloat(vaoMain, vertexNormal, 3, 1);
+        vertexAttribPointerFloat(vaoMain, vertexTexture, 2, 2);
+        vertexAttribPointerFloat(vaoMain, vertexWeight, 4, 3);
+        vertexAttribPointerInt(vaoMain, vertexIndex, 4, 4);
 
         float[] projectionViewMatrix = new float[16];
         Matrix.multiplyMM(projectionViewMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
@@ -261,7 +283,7 @@ public class InitGL {
         glUseProgram(programShadow);
 
         glGenVertexArrays(1, vaoShadow);
-        vertexAttribPointer(vaoShadow, vertexData, 3, 0);
+        vertexAttribPointerFloat(vaoShadow, vertexData, 3, 0);
 
         float[] projectionViewMatrix = new float[16];
         Matrix.multiplyMM(projectionViewMatrix, 0, projectionMatrixShadow, 0, viewMatrixShadow, 0);
@@ -276,17 +298,19 @@ public class InitGL {
         PLANE = GetDataDae.getModel(assets, "models/plane.dae");
         POINT = GetDataDae.getPoint();
         TEST_MODEL = GetDataDae.getModel(assets, "models/firstDae.dae");
-        float[] normal = getColorNormalAndTexture(KUB.normal, PLANE.normal, POINT.normal, TEST_MODEL.normal);
-        float[] texture = getColorNormalAndTexture(KUB.color, PLANE.color, POINT.color, TEST_MODEL.color);
-        float[] mesh = getMesh(KUB.position, PLANE.position, POINT.position, TEST_MODEL.position);
+        float[] normal = getNotPointsFloat(KUB.normal, PLANE.normal, POINT.normal, TEST_MODEL.normal);
+        float[] texture = getNotPointsFloat(KUB.color, PLANE.color, POINT.color, TEST_MODEL.color);
+        int[] index = getNotPointsInt(KUB.index, PLANE.index, POINT.index, TEST_MODEL.index);
+        float[] weight = getNotPointsFloat(KUB.weight, PLANE.weight, POINT.weight, TEST_MODEL.weight);
+        float[] mesh = getPoints(KUB.position, PLANE.position, POINT.position, TEST_MODEL.position);
         KUB.order = 0;
         PLANE.order = 1;
         POINT.order = 2;
         TEST_MODEL.order = 3;
-        vertexPut(mesh, normal, texture);
+        vertexPut(mesh, normal, texture, weight, index);
     }
 
-    private float[] getMesh(float[]... vertices) {
+    private float[] getPoints(float[]... vertices) {
         Order.orderList = new ArrayList<>();
         int size = 0;
         for (float[] vert : vertices)
@@ -304,7 +328,7 @@ public class InitGL {
         return meshes;
     }
 
-    private float[] getColorNormalAndTexture(float[]... vertices) {
+    private float[] getNotPointsFloat(float[]... vertices) {
         int size = 0;
         for (float[] vert : vertices)
             size += vert.length;
@@ -316,7 +340,19 @@ public class InitGL {
         return colorNormalAndTexture;
     }
 
-    private void vertexPut(float[] mesh, float[] normal, float[] texture) {
+    private int[] getNotPointsInt(int[]... vertices) {
+        int size = 0;
+        for (int[] vert : vertices)
+            size += vert.length;
+        int[] notPoints = new int[size];
+        int i = 0;
+        for (int[] vert : vertices)
+            for (int digit : vert)
+                notPoints[i++] = digit;
+        return notPoints;
+    }
+
+    private void vertexPut(float[] mesh, float[] normal, float[] texture, float[] weight, int[] index) {
         vertexData = ByteBuffer
                 .allocateDirect(mesh.length * 4)
                 .order(ByteOrder.nativeOrder())
@@ -334,5 +370,17 @@ public class InitGL {
                 .order(ByteOrder.nativeOrder())
                 .asFloatBuffer();
         vertexTexture.put(texture);
+
+        vertexWeight = ByteBuffer
+                .allocateDirect(weight.length * 4)
+                .order(ByteOrder.nativeOrder())
+                .asFloatBuffer();
+        vertexWeight.put(weight);
+
+        vertexIndex = ByteBuffer
+                .allocateDirect(index.length * 4)
+                .order(ByteOrder.nativeOrder())
+                .asIntBuffer();
+        vertexIndex.put(index);
     }
 }

@@ -78,7 +78,7 @@ public class ReadDataDae {
 
         model.mapBones = new HashMap<>();
         for (int i = 0; i < nameBones.size(); i++)
-            model.mapBones.put(nameBones.get(i), new Bone(nameBones.get(i), boneInvertMatrix.get(i)));
+            model.mapBones.put(nameBones.get(i), new Bone(nameBones.get(i), boneInvertMatrix.get(i), i));
         for (Map.Entry<String, Bone> entry : model.mapBones.entrySet()) {
             entry.getValue().setBeginBoneMatrix(
                     beginBoneMatrix.get(entry.getKey())
@@ -164,6 +164,10 @@ public class ReadDataDae {
                 );
                 System.arraycopy(indexSmall, 0, model.index, i * STRIDE_INDEX, indexSmall.length);
                 System.arraycopy(weightSmall, 0, model.weight, i * STRIDE_WEIGHT, weightSmall.length);
+            }
+            else {
+                System.arraycopy(new int[]{-1, -1, -1, -1}, 0, model.index, i * STRIDE_INDEX, STRIDE_INDEX);
+                System.arraycopy(new float[]{-1, -1, -1, -1}, 0, model.weight, i * STRIDE_WEIGHT, STRIDE_WEIGHT);
             }
         }
     }
