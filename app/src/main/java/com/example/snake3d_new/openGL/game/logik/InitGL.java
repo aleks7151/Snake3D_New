@@ -3,7 +3,7 @@ package com.example.snake3d_new.openGL.game.logik;
 import android.content.res.AssetManager;
 import android.opengl.Matrix;
 
-import com.example.snake3d_new.openGL.game.model.MeshDae;
+import com.example.snake3d_new.openGL.game.model.dae.GetDataDae;
 import com.example.snake3d_new.openGL.game.model.Model;
 import com.example.snake3d_new.openGL.game.utils.Order;
 import com.example.snake3d_new.openGL.game.utils.ShaderUtils;
@@ -272,10 +272,10 @@ public class InitGL {
     }
 
     private void prepareData() {
-        KUB = MeshDae.getModel(assets, "models/kub.dae");
-        PLANE = MeshDae.getModel(assets, "models/plane.dae");
-        POINT = MeshDae.getPoint();
-        TEST_MODEL = MeshDae.getModel(assets, "models/firstDae.dae");
+        KUB = GetDataDae.getModel(assets, "models/kub.dae");
+        PLANE = GetDataDae.getModel(assets, "models/plane.dae");
+        POINT = GetDataDae.getPoint();
+        TEST_MODEL = GetDataDae.getModel(assets, "models/firstDae.dae");
         float[] normal = getColorNormalAndTexture(KUB.normal, PLANE.normal, POINT.normal, TEST_MODEL.normal);
         float[] texture = getColorNormalAndTexture(KUB.color, PLANE.color, POINT.color, TEST_MODEL.color);
         float[] mesh = getMesh(KUB.position, PLANE.position, POINT.position, TEST_MODEL.position);

@@ -43,4 +43,13 @@ public class Constants {
         for (boolean[] booleans : freedom)
             Arrays.fill(booleans, true);
     }
+
+    //stride для данных
+    public static final int STRIDE_POSITION = 3;
+    public static final int STRIDE_NORMAL = 3;
+    public static final int STRIDE_COLOR = 2;
+    public static final int STRIDE_ORDER = 3;
+    public static final int STRIDE_MATRIX = 16;
+    public static final int STRIDE_WEIGHT = 4;
+    public static final int STRIDE_INDEX = 4;
 }

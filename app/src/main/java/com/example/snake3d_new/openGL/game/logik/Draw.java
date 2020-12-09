@@ -138,9 +138,11 @@ public class Draw {
         drawPlane();
         drawFreedom();
 
-        translateM(0, 0, 5);
-        rotateM(10, 0, 1, 0);
+        setColor(1, 0, 0);
+        translateM(0, 0, 7);
+        rotateM(ttt, 0, 1, 0);
         rotateM(ttt, 0, 0, 1);
+        rotateM(ttt, 1, 0, 0);
         ttt += 0.5f;
         bindMatrix();
         drawTriangles(TEST_MODEL);
