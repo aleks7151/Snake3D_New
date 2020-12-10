@@ -11,7 +11,10 @@ import com.example.snake3d_new.openGL.game.model.Bone;
 import com.example.snake3d_new.openGL.game.model.Model;
 import com.example.snake3d_new.openGL.game.utils.MatrixEnum;
 
+import java.util.Arrays;
 import java.util.Map;
+
+import javax.microedition.khronos.opengles.GL;
 
 import static android.opengl.GLES20.GL_BACK;
 import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
@@ -125,8 +128,8 @@ public class Draw {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         initGL.program = eProgramShadow;
         glBindVertexArray(initGL.vaoShadow.get(0));
-        drawSnake.draw(initGL.program);
-        drawFood.draw();
+//        drawSnake.draw(initGL.program);
+//        drawFood.draw();
         glCullFace(GL_BACK);
 
         glUseProgram(initGL.programId);
@@ -136,22 +139,24 @@ public class Draw {
         glBindTexture(GL_TEXTURE_2D, initGL.shadowMap.get(0));
         initGL.program = eProgramId;
         glBindVertexArray(initGL.vaoMain.get(0));
-        drawSnake.draw(initGL.program);
-        drawFood.draw();
-
-        drawPlane();
-        drawFreedom();
+//        drawSnake.draw(initGL.program);
+//        drawFood.draw();
+//
+//        drawPlane();
+//        drawFreedom();
 
         testAnimationFunc();
         setColor(1, 0, 0);
-        translateM(0, 0, 7);
+        float x = 0.2f;
+        scaleM(x, x, x);
+//        translateM(0, 0, 7);
         rotateM(ttt, 0, 1, 0);
-        rotateM(ttt, 0, 0, 1);
-        rotateM(ttt, 1, 0, 0);
+//        rotateM(ttt, 0, 0, 1);
+//        rotateM(ttt, 1, 0, 0);
         ttt += 0.5f;
         bindMatrix();
         drawTriangles(TEST_MODEL);
-        setIdentityM(translate, rotate);
+        setIdentityM(translate, rotate, scale);
         bindMatrix();
     }
     float ttt = 0;
@@ -165,25 +170,56 @@ public class Draw {
                 testRekurs(TEST_MODEL.mapBones, bone);
             }
         }
+        for (Map.Entry<String, Bone> entry : TEST_MODEL.mapBones.entrySet()){
+            Matrix.multiplyMM(entry.getValue().getMatrixNow(), 0, entry.getValue().getMatrixNow(), 0, entry.getValue().getInvertMatrix(), 0);
+            glUniformMatrix4fv(glGetUniformLocation(initGL.programId, "boneMatrix[" + entry.getValue().getIndexBone() +  "]"), 1, false, entry.getValue().getMatrixNow(), 0);
+        }
     }
 
+    boolean[] gg = new boolean[]{true, true, true};
+    float[] GLOBAL = new float[]{1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0.8360187f,
+            0, 0, 0, 1,};
     private void testRekurs(Map<String, Bone> map, Bone bone){
         if (bone.getParent() == null){//Если рут кость
             float[] matrix = new float[16];
-            Matrix.multiplyMM(matrix, 0, bone.getInvertMatrix(), 0, bone.getAnimMatrix().get(1), 0);
+//            Matrix.multiplyMM(matrix, 0, bone.getInvertMatrix(), 0, bone.getBeginBoneMatrix(), 0);
+            Matrix.multiplyMM(matrix, 0, GLOBAL, 0, bone.getBeginBoneMatrix(), 0);
             bone.setMatrixNow(matrix);
             glUniformMatrix4fv(glGetUniformLocation(initGL.programId, "boneMatrix[" + bone.getIndexBone() +  "]"), 1, false, matrix, 0);
             bone.setNeedUpdate(false);
+            if (gg[bone.getIndexBone()]){
+                gg[bone.getIndexBone()] = false;
+                Log.d("Name and index", bone.getName() + "  " + bone.getIndexBone());
+                Log.d("ivertMatrix", Arrays.toString(bone.getInvertMatrix()));
+                Log.d("beginMatrix", Arrays.toString(bone.getBeginBoneMatrix()));
+                Log.d("NowMatrix", Arrays.toString(bone.getMatrixNow()));
+                Log.d("matrix", Arrays.toString(matrix));
+                Log.d("enter", "e");
+            }
         }
         else {
             if (bone.getParent().getNeedUpdate())
                 testRekurs(map, bone.getParent());
             float[] matrix = new float[16];
-            Matrix.multiplyMM(matrix, 0, bone.getParent().getMatrixNow(), 0, bone.getInvertMatrix(), 0);
-            Matrix.multiplyMM(matrix, 0, matrix, 0, bone.getAnimMatrix().get(1), 0);
+            float[]  withoutParent = new float[16];
+            Matrix.multiplyMM(withoutParent, 0, GLOBAL, 0, bone.getBeginBoneMatrix(), 0);
+            Matrix.multiplyMM(matrix, 0, bone.getParent().getMatrixNow(), 0, withoutParent, 0);
             bone.setMatrixNow(matrix);
             glUniformMatrix4fv(glGetUniformLocation(initGL.programId, "boneMatrix[" + bone.getIndexBone() +  "]"), 1, false, matrix, 0);
             bone.setNeedUpdate(false);
+            if (gg[bone.getIndexBone()]){
+                gg[bone.getIndexBone()] = false;
+                Log.d("Name and index", bone.getName() + "  " + bone.getIndexBone());
+                Log.d("ivertMatrix", Arrays.toString(bone.getInvertMatrix()));
+                Log.d("beginMatrix", Arrays.toString(bone.getBeginBoneMatrix()));
+                Log.d("parentMatrix", Arrays.toString(bone.getParent().getMatrixNow()));
+                Log.d("NowMatrix", Arrays.toString(bone.getMatrixNow()));
+                Log.d("withoutParentr", Arrays.toString(withoutParent));
+                Log.d("matrix", Arrays.toString(matrix));
+                Log.d("enter", "e");
+            }
         }
     }
 

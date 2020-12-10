@@ -3,7 +3,7 @@ layout (location = 0) in vec4 position;
 layout (location = 1) in vec3 normal;
 layout (location = 2) in vec2 texture;
 layout (location = 3) in vec4 weight;
-layout (location = 4) in vec4 index;
+layout (location = 4) in ivec4 index;
 
 uniform mat4 projectionViewMatrix;
 uniform mat4 projectionViewMatrixShadow;
@@ -16,17 +16,29 @@ out vec4 shadowPosition;
 out vec2 textureVariable;
 
 void main(){
-    normalVariable = mat3(modelMatrix) * normal;
     textureVariable = texture;
+
+    vec3 normalModel = mat3(modelMatrix) * normal;
+    vec3 normalBone = vec3(0.0);
 
     vec4 modelPosition = modelMatrix * position;//Пеобразовать обратно без tmp
     vec4 bonePosition = vec4(0.0);
+    bool check = false;
 
-//    for (int i = 0; i < 4; i++){
-//        if (index[i] > 0.0){
-//            bonePosition += weight[i] * boneMatrix[int(index[i])] * modelPosition;//Нихуя не работает!!!!!!!!!!!!!!!!!!!!!
-//        }
-//    }
+    for (int i = 0; i < 4; i++){
+        if (index[i] > 0){
+            check = true;
+            bonePosition += weight[i] * boneMatrix[index[i]] * modelPosition;
+            normalBone += (weight[i] * boneMatrix[index[i]] * vec4(normalModel, 1.0)).xyz;
+        }
+    }
+    if (check){
+        modelPosition = bonePosition;
+        normalVariable = normalBone;
+    }
+    else {
+        normalVariable = normalModel;
+    }
 
     shadowPosition = projectionViewMatrixShadow * modelPosition;
 
