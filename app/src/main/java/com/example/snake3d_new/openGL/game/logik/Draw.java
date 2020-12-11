@@ -171,7 +171,8 @@ public class Draw {
             }
         }
         for (Map.Entry<String, Bone> entry : TEST_MODEL.mapBones.entrySet()){
-            Matrix.multiplyMM(entry.getValue().getMatrixNow(), 0, entry.getValue().getMatrixNow(), 0, entry.getValue().getInvertMatrix(), 0);
+//            Matrix.multiplyMM(entry.getValue().getMatrixNow(), 0, entry.getValue().getMatrixNow(), 0, entry.getValue().getInvertMatrix(), 0);
+            Matrix.multiplyMM(entry.getValue().getMatrixNow(), 0, entry.getValue().getInvertMatrix(), 0, entry.getValue().getMatrixNow(), 0);
             glUniformMatrix4fv(glGetUniformLocation(initGL.programId, "boneMatrix[" + entry.getValue().getIndexBone() +  "]"), 1, false, entry.getValue().getMatrixNow(), 0);
         }
     }
@@ -184,7 +185,6 @@ public class Draw {
     private void testRekurs(Map<String, Bone> map, Bone bone){
         if (bone.getParent() == null){//Если рут кость
             float[] matrix = new float[16];
-//            Matrix.multiplyMM(matrix, 0, bone.getInvertMatrix(), 0, bone.getBeginBoneMatrix(), 0);
             Matrix.multiplyMM(matrix, 0, GLOBAL, 0, bone.getBeginBoneMatrix(), 0);
             bone.setMatrixNow(matrix);
             glUniformMatrix4fv(glGetUniformLocation(initGL.programId, "boneMatrix[" + bone.getIndexBone() +  "]"), 1, false, matrix, 0);
@@ -203,9 +203,9 @@ public class Draw {
             if (bone.getParent().getNeedUpdate())
                 testRekurs(map, bone.getParent());
             float[] matrix = new float[16];
-            float[]  withoutParent = new float[16];
-            Matrix.multiplyMM(withoutParent, 0, GLOBAL, 0, bone.getBeginBoneMatrix(), 0);
-            Matrix.multiplyMM(matrix, 0, bone.getParent().getMatrixNow(), 0, withoutParent, 0);
+            float[]  kaka = new float[16];
+            Matrix.multiplyMM(kaka, 0, bone.getParent().getMatrixNow(), 0, bone.getBeginBoneMatrix(), 0);
+            Matrix.multiplyMM(matrix, 0, GLOBAL, 0, kaka, 0);
             bone.setMatrixNow(matrix);
             glUniformMatrix4fv(glGetUniformLocation(initGL.programId, "boneMatrix[" + bone.getIndexBone() +  "]"), 1, false, matrix, 0);
             bone.setNeedUpdate(false);
@@ -216,7 +216,7 @@ public class Draw {
                 Log.d("beginMatrix", Arrays.toString(bone.getBeginBoneMatrix()));
                 Log.d("parentMatrix", Arrays.toString(bone.getParent().getMatrixNow()));
                 Log.d("NowMatrix", Arrays.toString(bone.getMatrixNow()));
-                Log.d("withoutParentr", Arrays.toString(withoutParent));
+                Log.d("withoutParentr", Arrays.toString(kaka));
                 Log.d("matrix", Arrays.toString(matrix));
                 Log.d("enter", "e");
             }
