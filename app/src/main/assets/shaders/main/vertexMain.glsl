@@ -18,26 +18,27 @@ out vec2 textureVariable;
 void main(){
     textureVariable = texture;
 
-    vec3 normalBone = vec3(0.0);
+    vec3 boneNormal = vec3(0.0);
 
     vec4 modelPosition;
     vec4 bonePosition = vec4(0.0);
     bool check = false;
 
     for (int i = 0; i < 4; i++){
-        if (index[i] > 0){
+        if (index[i] >= 0){
             check = true;
-            bonePosition += weight[i] * boneMatrix[index[i]] * position;
-            normalBone += (weight[i] * boneMatrix[index[i]] * vec4(normal, 1.0)).xyz;
+            mat4 tempMatrix = weight[i] * boneMatrix[index[i]];
+            bonePosition += tempMatrix * position;
+            boneNormal += mat3(tempMatrix) * normal;
         }
     }
     if (check){
         modelPosition = modelMatrix * bonePosition;
-        normalVariable = (modelMatrix * vec4(normalBone, 1.0)).xyz;
+        normalVariable = mat3(modelMatrix) * boneNormal;
     }
     else {
         modelPosition = modelMatrix * position;
-        normalVariable = (modelMatrix * vec4(normal, 1.0)).xyz;
+        normalVariable = mat3(modelMatrix) * normal;
     }
 
     shadowPosition = projectionViewMatrixShadow * modelPosition;

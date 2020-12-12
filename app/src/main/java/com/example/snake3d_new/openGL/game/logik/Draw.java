@@ -14,8 +14,6 @@ import com.example.snake3d_new.openGL.game.utils.MatrixEnum;
 import java.util.Arrays;
 import java.util.Map;
 
-import javax.microedition.khronos.opengles.GL;
-
 import static android.opengl.GLES20.GL_BACK;
 import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
 import static android.opengl.GLES20.GL_DEPTH_BUFFER_BIT;
@@ -148,8 +146,8 @@ public class Draw {
         testAnimationFunc();
         setColor(1, 0, 0);
         float x = 0.2f;
-        scaleM(x, x, x);
-//        translateM(0, 0, 7);
+//        scaleM(x, x, x);
+        translateM(0, 0, -15);
         rotateM(ttt, 0, 1, 0);
 //        rotateM(ttt, 0, 0, 1);
 //        rotateM(ttt, 1, 0, 0);
@@ -171,55 +169,66 @@ public class Draw {
             }
         }
         for (Map.Entry<String, Bone> entry : TEST_MODEL.mapBones.entrySet()){
-//            Matrix.multiplyMM(entry.getValue().getMatrixNow(), 0, entry.getValue().getMatrixNow(), 0, entry.getValue().getInvertMatrix(), 0);
-            Matrix.multiplyMM(entry.getValue().getMatrixNow(), 0, entry.getValue().getInvertMatrix(), 0, entry.getValue().getMatrixNow(), 0);
+//            Matrix.multiplyMM(entry.getValue().getMatrixNow(), 0, entry.getValue().getInvertMatrix(), 0, entry.getValue().getMatrixNow(), 0);
+//            Matrix.multiplyMM(entry.getValue().getMatrixNow(), 0, entry.getValue().getMatrixNow(), 0, GLOBAL, 0);
+
+            Matrix.multiplyMM(entry.getValue().getMatrixNow(), 0, entry.getValue().getMatrixNow(), 0, GLOBAL, 0);
+            Matrix.multiplyMM(entry.getValue().getMatrixNow(), 0, entry.getValue().getMatrixNow(), 0, entry.getValue().getInvertMatrix(), 0);
+
             glUniformMatrix4fv(glGetUniformLocation(initGL.programId, "boneMatrix[" + entry.getValue().getIndexBone() +  "]"), 1, false, entry.getValue().getMatrixNow(), 0);
         }
     }
 
     boolean[] gg = new boolean[]{true, true, true};
-    float[] GLOBAL = new float[]{1, 0, 0, 0,
+    public float[] GLOBAL0 = new float[]{
+            1, 0, 0, 0,
             0, 1, 0, 0,
-            0, 0, 1, 0.8360187f,
-            0, 0, 0, 1,};
+            0, 0, 1, -0.8360187f,
+            0, 0, 0, 1,
+    };
+    public float[] GLOBAL1 = new float[]{
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1,
+    };
+    public float[] GLOBAL = GLOBAL1;
+    int anim = 1;
     private void testRekurs(Map<String, Bone> map, Bone bone){
         if (bone.getParent() == null){//Если рут кость
             float[] matrix = new float[16];
-            Matrix.multiplyMM(matrix, 0, GLOBAL, 0, bone.getBeginBoneMatrix(), 0);
+            matrix = Arrays.copyOf(bone.getAnimMatrix().get(anim), 16);
             bone.setMatrixNow(matrix);
-            glUniformMatrix4fv(glGetUniformLocation(initGL.programId, "boneMatrix[" + bone.getIndexBone() +  "]"), 1, false, matrix, 0);
             bone.setNeedUpdate(false);
-            if (gg[bone.getIndexBone()]){
-                gg[bone.getIndexBone()] = false;
-                Log.d("Name and index", bone.getName() + "  " + bone.getIndexBone());
-                Log.d("ivertMatrix", Arrays.toString(bone.getInvertMatrix()));
-                Log.d("beginMatrix", Arrays.toString(bone.getBeginBoneMatrix()));
-                Log.d("NowMatrix", Arrays.toString(bone.getMatrixNow()));
-                Log.d("matrix", Arrays.toString(matrix));
-                Log.d("enter", "e");
-            }
+//            if (gg[bone.getIndexBone()]){
+//                gg[bone.getIndexBone()] = false;
+//                Log.d("Name and index", bone.getName() + "  " + bone.getIndexBone());
+//                Log.d("ivertMatrix", Arrays.toString(bone.getInvertMatrix()));
+//                Log.d("beginMatrix", Arrays.toString(bone.getBeginBoneMatrix()));
+//                Log.d("NowMatrix", Arrays.toString(bone.getMatrixNow()));
+//                Log.d("matrix", Arrays.toString(matrix));
+//                Log.d("enter", "e");
+//            }
         }
         else {
             if (bone.getParent().getNeedUpdate())
                 testRekurs(map, bone.getParent());
             float[] matrix = new float[16];
-            float[]  kaka = new float[16];
-            Matrix.multiplyMM(kaka, 0, bone.getParent().getMatrixNow(), 0, bone.getBeginBoneMatrix(), 0);
-            Matrix.multiplyMM(matrix, 0, GLOBAL, 0, kaka, 0);
+            Matrix.multiplyMM(matrix, 0, bone.getAnimMatrix().get(anim), 0, bone.getParent().getMatrixNow(), 0);
+//            Matrix.multiplyMM(matrix, 0, bone.getParent().getMatrixNow(), 0, bone.getAnimMatrix().get(anim), 0);
             bone.setMatrixNow(matrix);
-            glUniformMatrix4fv(glGetUniformLocation(initGL.programId, "boneMatrix[" + bone.getIndexBone() +  "]"), 1, false, matrix, 0);
             bone.setNeedUpdate(false);
-            if (gg[bone.getIndexBone()]){
-                gg[bone.getIndexBone()] = false;
-                Log.d("Name and index", bone.getName() + "  " + bone.getIndexBone());
-                Log.d("ivertMatrix", Arrays.toString(bone.getInvertMatrix()));
-                Log.d("beginMatrix", Arrays.toString(bone.getBeginBoneMatrix()));
-                Log.d("parentMatrix", Arrays.toString(bone.getParent().getMatrixNow()));
-                Log.d("NowMatrix", Arrays.toString(bone.getMatrixNow()));
-                Log.d("withoutParentr", Arrays.toString(kaka));
-                Log.d("matrix", Arrays.toString(matrix));
-                Log.d("enter", "e");
-            }
+//            if (gg[bone.getIndexBone()]){
+//                gg[bone.getIndexBone()] = false;
+//                Log.d("Name and index", bone.getName() + "  " + bone.getIndexBone());
+//                Log.d("ivertMatrix", Arrays.toString(bone.getInvertMatrix()));
+//                Log.d("beginMatrix", Arrays.toString(bone.getBeginBoneMatrix()));
+//                Log.d("parentMatrix", Arrays.toString(bone.getParent().getMatrixNow()));
+//                Log.d("NowMatrix", Arrays.toString(bone.getMatrixNow()));
+//                Log.d("withoutParentr", Arrays.toString(kaka));
+//                Log.d("matrix", Arrays.toString(matrix));
+//                Log.d("enter", "e");
+//            }
         }
     }
 
