@@ -8,12 +8,14 @@ import com.example.snake3d_new.openGL.game.model.Model;
 import com.example.snake3d_new.openGL.game.utils.Order;
 import com.example.snake3d_new.openGL.game.utils.ShaderUtils;
 
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 
+import static android.opengl.GLES10.GL_FOG;
 import static android.opengl.GLES10.glGenTextures;
 import static android.opengl.GLES20.GL_ARRAY_BUFFER;
 import static android.opengl.GLES20.GL_CLAMP_TO_EDGE;
@@ -91,11 +93,13 @@ public class InitGL {
     public float[] rotateMatrix = new float[16];
     public float[] scaleMatrix = new float[16];
     public float[] modelMatrix = new float[16];
+    public float[] normalMatrix = new float[16];
 
     private float[] projectionMatrixShadow = new float[16];
     private float[] viewMatrixShadow = new float[16];
 
     public int locationModelMatrix;
+    public int locationNormalMatrix;
     public int locationColor;
 
     public int locationModelMatrixShadow;
@@ -131,6 +135,7 @@ public class InitGL {
         Matrix.setIdentityM(rotateMatrix, 0);
         Matrix.setIdentityM(scaleMatrix, 0);
         Matrix.setIdentityM(modelMatrix, 0);
+        Matrix.setIdentityM(normalMatrix, 0);
 
         createProjectionMatrix();
         createViewMatrix();
@@ -218,7 +223,7 @@ public class InitGL {
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    private void vertexAttribPointerFloat(IntBuffer VAO, FloatBuffer buffer, int sizeVec, int order){
+    private void vertexAttribPointer(IntBuffer VAO, Buffer buffer, int sizeVec, int order, final int TYPE){
         IntBuffer VBO = IntBuffer.allocate(1);
 
         glGenBuffers(1, VBO);
@@ -228,24 +233,7 @@ public class InitGL {
         buffer.position(0);
         glBufferData(GL_ARRAY_BUFFER, buffer.limit() * 4, buffer, GL_STATIC_DRAW);
 
-        glVertexAttribPointer(order, sizeVec, GL_FLOAT, false, sizeVec * 4, 0);
-        glEnableVertexAttribArray(order);
-
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindVertexArray(0);
-    }
-
-    private void vertexAttribPointerInt(IntBuffer VAO, IntBuffer buffer, int sizeVec, int order){
-        IntBuffer VBO = IntBuffer.allocate(1);
-
-        glGenBuffers(1, VBO);
-        glBindVertexArray(VAO.get(0));
-        glBindBuffer(GL_ARRAY_BUFFER, VBO.get());
-
-        buffer.position(0);
-        glBufferData(GL_ARRAY_BUFFER, buffer.limit() * 4, buffer, GL_STATIC_DRAW);
-
-        glVertexAttribPointer(order, sizeVec, GL_INT, false, sizeVec * 4, 0);
+        glVertexAttribPointer(order, sizeVec, TYPE, false, sizeVec * 4, 0);
         glEnableVertexAttribArray(order);
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -256,11 +244,11 @@ public class InitGL {
         glUseProgram(programId);
 
         glGenVertexArrays(1, vaoMain);
-        vertexAttribPointerFloat(vaoMain, vertexData, 3, 0);
-        vertexAttribPointerFloat(vaoMain, vertexNormal, 3, 1);
-        vertexAttribPointerFloat(vaoMain, vertexTexture, 2, 2);
-        vertexAttribPointerFloat(vaoMain, vertexWeight, 4, 3);
-        vertexAttribPointerInt(vaoMain, vertexIndex, 4, 4);
+        vertexAttribPointer(vaoMain, vertexData, 3, 0, GL_FLOAT);
+        vertexAttribPointer(vaoMain, vertexNormal, 3, 1, GL_FLOAT);
+        vertexAttribPointer(vaoMain, vertexTexture, 2, 2, GL_FLOAT);
+        vertexAttribPointer(vaoMain, vertexWeight, 4, 3, GL_FLOAT);
+        vertexAttribPointer(vaoMain, vertexIndex, 4, 4, GL_INT);
 
         float[] projectionViewMatrix = new float[16];
         Matrix.multiplyMM(projectionViewMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
@@ -273,6 +261,9 @@ public class InitGL {
         locationModelMatrix = glGetUniformLocation(programId, "modelMatrix");
         glUniformMatrix4fv(locationModelMatrix, 1, false, modelMatrix, 0);
 
+        locationNormalMatrix = glGetUniformLocation(programId, "normalMatrix");
+        glUniformMatrix4fv(locationNormalMatrix, 1, false, normalMatrix, 0);
+
         locationColor = glGetUniformLocation(programId, "color");
         glUniform4f(locationColor, 1, 1, 1, 1);
 
@@ -283,7 +274,7 @@ public class InitGL {
         glUseProgram(programShadow);
 
         glGenVertexArrays(1, vaoShadow);
-        vertexAttribPointerFloat(vaoShadow, vertexData, 3, 0);
+        vertexAttribPointer(vaoShadow, vertexData, 3, 0, GL_FLOAT);
 
         float[] projectionViewMatrix = new float[16];
         Matrix.multiplyMM(projectionViewMatrix, 0, projectionMatrixShadow, 0, viewMatrixShadow, 0);
@@ -297,7 +288,7 @@ public class InitGL {
         KUB = GetDataDae.getModel(assets, "models/kub.dae");
         PLANE = GetDataDae.getModel(assets, "models/plane.dae");
         POINT = GetDataDae.getPoint();
-        TEST_MODEL = GetDataDae.getModel(assets, "models/test.dae");
+        TEST_MODEL = GetDataDae.getModel(assets, "models/chel.dae");
         float[] normal = getNotPointsFloat(KUB.normal, PLANE.normal, POINT.normal, TEST_MODEL.normal);
         float[] texture = getNotPointsFloat(KUB.color, PLANE.color, POINT.color, TEST_MODEL.color);
         int[] index = getNotPointsInt(KUB.index, PLANE.index, POINT.index, TEST_MODEL.index);

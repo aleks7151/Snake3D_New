@@ -13,6 +13,7 @@ import org.w3c.dom.NodeList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +28,7 @@ public class GetDataDae {
         Node nodeGeometries = null;
         Node nodeControllers = null;
         Node nodeAnimations = null;
+        String rootBoneName = "";
         try {
             DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             Document document = documentBuilder.parse(assets.open(path));
@@ -43,7 +45,8 @@ public class GetDataDae {
                 beginBoneMatrix = new HashMap<>();
                 childParentBone = new HashMap<>();
                 Node root = document.getElementsByTagName("node").item(1);
-                childParentBone.put(parseNameForVisualScene(root.getAttributes().item(0).getTextContent()), null);
+                rootBoneName = parseNameForVisualScene(root.getAttributes().item(0).getTextContent());
+                childParentBone.put(rootBoneName, null);
                 findTreeBones(root);
             }
 
@@ -69,7 +72,7 @@ public class GetDataDae {
         ReadDataDae readDataDae = new ReadDataDae(model);
         readDataDae.getGeometries(listGeometries);
         if (nodeControllers != null)
-            readDataDae.getControllers(listControllers, beginBoneMatrix, childParentBone);
+            readDataDae.getControllers(listControllers, beginBoneMatrix, childParentBone, rootBoneName);
         if (nodeAnimations != null)
             readDataDae.getAnimations(listAnimations, nameBones);
         readDataDae.setFinalData();
@@ -99,16 +102,17 @@ public class GetDataDae {
         }
     }
 
-    private static Map<String, String> childParentBone;
+    private static Map<String, List<String>> childParentBone;
     private static Map<String, float[]> beginBoneMatrix;
 
     private static void findTreeBones(Node node) {
         String nameParrent = parseNameForVisualScene(node.getAttributes().item(0).getTextContent());
+        List<String> stringList = null;
         for (int i = 0; i < node.getChildNodes().getLength(); i++){
             Node child = node.getChildNodes().item(i);
             if (child.getNodeName().equals("matrix")){
                 if (beginBoneMatrix.get(nameParrent) != null)
-                    Log.d("MyLog", "Странная хуйня, начаьная матрица кости дважды попалась");
+                    Log.d("MyLog", "Странная хуйня, начальная матрица кости дважды попалась");
                 List<Float> list = new ArrayList<>();
                 UtilsDae.toFloatFromString(list, child.getTextContent());
                 float[] array = new float[list.size()];
@@ -122,10 +126,13 @@ public class GetDataDae {
                 String nameChild = parseNameForVisualScene(child.getAttributes().item(0).getTextContent());
                 if (childParentBone.get(nameChild) != null)
                     Log.d("MyLog", "У кости " + nameChild + " два родителя. Что?");
-                childParentBone.put(nameChild, nameParrent);
+                if (stringList == null)
+                    stringList = new ArrayList<>();
+                stringList.add(nameChild);
                 findTreeBones(child);
             }
         }
+        childParentBone.put(nameParrent, stringList);
     }
 
     private static String parseNameForVisualScene(String textContent) {

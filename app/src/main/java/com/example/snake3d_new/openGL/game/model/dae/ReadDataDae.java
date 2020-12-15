@@ -2,11 +2,14 @@ package com.example.snake3d_new.openGL.game.model.dae;
 
 import android.util.Log;
 
+import com.example.snake3d_new.openGL.game.logik.InitGL;
 import com.example.snake3d_new.openGL.game.model.Bone;
 import com.example.snake3d_new.openGL.game.model.Model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +33,7 @@ public class ReadDataDae {
     private int pointsAmount;
     private int finalPointsAmount;
     public int bonesAmount = 0;
+    private Map <String, Bone> mapBones = new HashMap<>();
 
     private Model model;
 
@@ -57,7 +61,7 @@ public class ReadDataDae {
         finalPointsAmount = orderMesh.size();
     }
 
-    void getControllers(List<String> listControllers, Map<String, float[]> beginBoneMatrix, Map<String, String> childParentBone) {
+    void getControllers(List<String> listControllers, Map<String, float[]> beginBoneMatrix, Map<String, List<String>> childParentBone, String rootBoneName) {
         List<float[]> boneInvertMatrix = new ArrayList<>();
         List<Float> listWeight = new ArrayList<>();
         List<Integer> amountOfBone = new ArrayList<>();
@@ -76,18 +80,21 @@ public class ReadDataDae {
         UtilsDae.toIntFromString(amountOfBone, stringAmountOfBones);
         UtilsDae.toIntArrayFromStringAndAmountBones(jointWeight, stringJointsWeights, amountOfBone);
 
-        model.mapBones = new HashMap<>();
+        mapBones = new HashMap<>();
         for (int i = 0; i < nameBones.size(); i++)
-            model.mapBones.put(nameBones.get(i), new Bone(nameBones.get(i), boneInvertMatrix.get(i), i));
-        for (Map.Entry<String, Bone> entry : model.mapBones.entrySet()) {
-            entry.getValue().setBeginBoneMatrix(
-                    beginBoneMatrix.get(entry.getKey())
-            );
-            entry.getValue().setParent(
-                    model.mapBones.get(
-                            childParentBone.get(entry.getKey()
-                    ))
-            );
+            mapBones.put(nameBones.get(i), new Bone(nameBones.get(i), boneInvertMatrix.get(i), i));
+        model.rootBone = mapBones.get(rootBoneName);
+        for (Map.Entry<String, Bone> entry : mapBones.entrySet()) {
+            Bone bone = entry.getValue();
+            String nameBone = entry.getKey();
+            bone.setBeginBoneMatrix(beginBoneMatrix.get(nameBone));
+            if (childParentBone.get(nameBone) == null)
+                bone.childs = null;
+            else {
+                bone.childs = new ArrayList<>();
+                for (String nameChilds : childParentBone.get(nameBone))
+                    bone.childs.add(mapBones.get(nameChilds));
+            }
         }
 
         if (pointsAmount != amountOfBone.size())
@@ -129,7 +136,7 @@ public class ReadDataDae {
             UtilsDae.toFloatFromString(time, stringTime);
             UtilsDae.toFloatArrayFromString(boneAnimMatrix, stringBoneMatrix, STRIDE_MATRIX);
 
-            Bone bone = model.mapBones.get(nameBones.get(i));
+            Bone bone = mapBones.get(nameBones.get(i));
             bone.setTime(time);
             bone.setAnimMatrix(boneAnimMatrix);
         }

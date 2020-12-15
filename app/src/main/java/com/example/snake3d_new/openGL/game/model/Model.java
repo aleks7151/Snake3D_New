@@ -12,5 +12,5 @@ public class Model {
     public float[] weight = null;
     public int[] index = null;
 
-    public Map<String, Bone> mapBones = null;
+    public Bone rootBone = null;
 }

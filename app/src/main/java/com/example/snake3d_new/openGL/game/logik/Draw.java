@@ -12,7 +12,6 @@ import com.example.snake3d_new.openGL.game.model.Model;
 import com.example.snake3d_new.openGL.game.utils.MatrixEnum;
 
 import java.util.Arrays;
-import java.util.Map;
 
 import static android.opengl.GLES20.GL_BACK;
 import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
@@ -80,8 +79,12 @@ public class Draw {
     public void bindMatrix(){
         Matrix.multiplyMM(initGL.modelMatrix, 0, initGL.translateMatrix, 0, initGL.rotateMatrix, 0);
         Matrix.multiplyMM(initGL.modelMatrix, 0, initGL.modelMatrix, 0, initGL.scaleMatrix, 0);
-        if (initGL.program == eProgramId)
+        if (initGL.program == eProgramId) {
             glUniformMatrix4fv(initGL.locationModelMatrix, 1, false, initGL.modelMatrix, 0);
+            Matrix.invertM(initGL.normalMatrix, 0, initGL.modelMatrix, 0);
+            Matrix.transposeM(initGL.normalMatrix, 0, initGL.normalMatrix, 0);
+            glUniformMatrix4fv(initGL.locationNormalMatrix, 1, false, initGL.normalMatrix, 0);
+        }
         else if (initGL.program == eProgramShadow)
             glUniformMatrix4fv(initGL.locationModelMatrixShadow, 1, false, initGL.modelMatrix, 0);
     }
@@ -143,92 +146,52 @@ public class Draw {
 //        drawPlane();
 //        drawFreedom();
 
-        testAnimationFunc();
+        testRekurs(TEST_MODEL.rootBone, null, 2);
         setColor(1, 0, 0);
-        float x = 0.2f;
-//        scaleM(x, x, x);
-        translateM(0, 0, -15);
-        rotateM(ttt, 0, 1, 0);
-//        rotateM(ttt, 0, 0, 1);
-//        rotateM(ttt, 1, 0, 0);
-        ttt += 0.5f;
+        translateM(0, 6, 0);
+        rotateM(angle0, 0, 1, 0);
+        angle0 += 0.5f;
+        bindMatrix();
+        drawTriangles(TEST_MODEL);
+        setIdentityM(translate, rotate, scale);
+        bindMatrix();
+
+
+        testRekurs(TEST_MODEL.rootBone, null, 1);
+        setColor(1, 0, 0);
+        translateM(0, -6, 0);
+        rotateM(angle1 + 90, 0, 1, 0);
+        angle1 += 0.5f;
         bindMatrix();
         drawTriangles(TEST_MODEL);
         setIdentityM(translate, rotate, scale);
         bindMatrix();
     }
-    float ttt = 0;
+    float angle0 = 0;
+    float angle1 = 0;
 
-    private void testAnimationFunc() {
-        for (Map.Entry<String, Bone> entry : TEST_MODEL.mapBones.entrySet())
-            entry.getValue().setNeedUpdate(true);
-        for (Map.Entry<String, Bone> entry : TEST_MODEL.mapBones.entrySet()){
-            Bone bone = entry.getValue();
-            if (bone.getNeedUpdate()){//Если требуется апдейт матрицы
-                testRekurs(TEST_MODEL.mapBones, bone);
-            }
-        }
-        for (Map.Entry<String, Bone> entry : TEST_MODEL.mapBones.entrySet()){
-//            Matrix.multiplyMM(entry.getValue().getMatrixNow(), 0, entry.getValue().getInvertMatrix(), 0, entry.getValue().getMatrixNow(), 0);
-//            Matrix.multiplyMM(entry.getValue().getMatrixNow(), 0, entry.getValue().getMatrixNow(), 0, GLOBAL, 0);
-
-            Matrix.multiplyMM(entry.getValue().getMatrixNow(), 0, entry.getValue().getMatrixNow(), 0, GLOBAL, 0);
-            Matrix.multiplyMM(entry.getValue().getMatrixNow(), 0, entry.getValue().getMatrixNow(), 0, entry.getValue().getInvertMatrix(), 0);
-
-            glUniformMatrix4fv(glGetUniformLocation(initGL.programId, "boneMatrix[" + entry.getValue().getIndexBone() +  "]"), 1, false, entry.getValue().getMatrixNow(), 0);
-        }
-    }
-
-    boolean[] gg = new boolean[]{true, true, true};
-    public float[] GLOBAL0 = new float[]{
-            1, 0, 0, 0,
-            0, 1, 0, 0,
-            0, 0, 1, -0.8360187f,
-            0, 0, 0, 1,
-    };
-    public float[] GLOBAL1 = new float[]{
-            1, 0, 0, 0,
-            0, 1, 0, 0,
-            0, 0, 1, 0,
-            0, 0, 0, 1,
-    };
-    public float[] GLOBAL = GLOBAL1;
-    int anim = 1;
-    private void testRekurs(Map<String, Bone> map, Bone bone){
-        if (bone.getParent() == null){//Если рут кость
-            float[] matrix = new float[16];
+    private void testRekurs(Bone bone, Bone parent, int anim) {
+        float[] matrix = new float[16];
+        float[] invert = new float[16];
+        if (parent == null){
             matrix = Arrays.copyOf(bone.getAnimMatrix().get(anim), 16);
-            bone.setMatrixNow(matrix);
-            bone.setNeedUpdate(false);
-//            if (gg[bone.getIndexBone()]){
-//                gg[bone.getIndexBone()] = false;
-//                Log.d("Name and index", bone.getName() + "  " + bone.getIndexBone());
-//                Log.d("ivertMatrix", Arrays.toString(bone.getInvertMatrix()));
-//                Log.d("beginMatrix", Arrays.toString(bone.getBeginBoneMatrix()));
-//                Log.d("NowMatrix", Arrays.toString(bone.getMatrixNow()));
-//                Log.d("matrix", Arrays.toString(matrix));
-//                Log.d("enter", "e");
-//            }
+            Matrix.multiplyMM(invert, 0, bone.getInvertMatrix(), 0, matrix, 0);
         }
         else {
-            if (bone.getParent().getNeedUpdate())
-                testRekurs(map, bone.getParent());
-            float[] matrix = new float[16];
-            Matrix.multiplyMM(matrix, 0, bone.getAnimMatrix().get(anim), 0, bone.getParent().getMatrixNow(), 0);
-//            Matrix.multiplyMM(matrix, 0, bone.getParent().getMatrixNow(), 0, bone.getAnimMatrix().get(anim), 0);
-            bone.setMatrixNow(matrix);
-            bone.setNeedUpdate(false);
-//            if (gg[bone.getIndexBone()]){
-//                gg[bone.getIndexBone()] = false;
-//                Log.d("Name and index", bone.getName() + "  " + bone.getIndexBone());
-//                Log.d("ivertMatrix", Arrays.toString(bone.getInvertMatrix()));
-//                Log.d("beginMatrix", Arrays.toString(bone.getBeginBoneMatrix()));
-//                Log.d("parentMatrix", Arrays.toString(bone.getParent().getMatrixNow()));
-//                Log.d("NowMatrix", Arrays.toString(bone.getMatrixNow()));
-//                Log.d("withoutParentr", Arrays.toString(kaka));
-//                Log.d("matrix", Arrays.toString(matrix));
-//                Log.d("enter", "e");
-//            }
+            Matrix.multiplyMM(matrix, 0, bone.getAnimMatrix().get(anim), 0, parent.getMatrixNow(), 0);
+            Matrix.multiplyMM(invert, 0, bone.getInvertMatrix(), 0, matrix, 0);
+        }
+        bone.setMatrixNow(matrix);
+
+        float[] forNormal = Arrays.copyOf(invert, 16);
+        Matrix.transposeM(forNormal, 0, invert, 0);
+        Matrix.invertM(forNormal, 0, forNormal, 0);
+
+        glUniformMatrix4fv(glGetUniformLocation(initGL.programId, "boneModelMatrix[" + bone.getIndexBone() + ']'), 1, false, invert, 0);
+        glUniformMatrix4fv(glGetUniformLocation(initGL.programId, "boneNormalMatrix[" + bone.getIndexBone() + ']'), 1, false, forNormal, 0);
+        if (bone.childs != null){
+            for (Bone child : bone.childs)
+                testRekurs(child, bone, anim);
         }
     }
 

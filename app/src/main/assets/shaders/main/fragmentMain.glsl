@@ -26,7 +26,7 @@ void main(){
     vec3 lightPos = vec3(0.0, 0.0, 30.0);
 
     vec3 lightVector = normalize(lightPos - positionVariable.xyz);
-    float diffuse = max(dot(normalize(normalVariable), lightVector), 0.0);
+    float diffuse = max(dot(normalize(normalVariable), lightVector), 0.0) + 0.15;//ambient
 
     float shadow = getShadow();
 

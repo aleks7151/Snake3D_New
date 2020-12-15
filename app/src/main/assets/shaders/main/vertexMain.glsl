@@ -8,7 +8,8 @@ layout (location = 4) in ivec4 index;
 uniform mat4 projectionViewMatrix;
 uniform mat4 projectionViewMatrixShadow;
 uniform mat4 modelMatrix;
-uniform mat4 boneMatrix[50];
+uniform mat4 boneModelMatrix[50];
+uniform mat4 boneNormalMatrix[50];
 
 out vec4 positionVariable;
 out vec3 normalVariable;
@@ -17,24 +18,22 @@ out vec2 textureVariable;
 
 void main(){
     textureVariable = texture;
-
-    vec3 boneNormal = vec3(0.0);
-
-    vec4 modelPosition;
-    vec4 bonePosition = vec4(0.0);
     bool check = false;
-
+    mat4 animModelMatrix = mat4(0.0);
+    mat4 animNormalMatrix = mat4(0.0);
     for (int i = 0; i < 4; i++){
         if (index[i] >= 0){
             check = true;
-            mat4 tempMatrix = weight[i] * boneMatrix[index[i]];
-            bonePosition += tempMatrix * position;
-            boneNormal += mat3(tempMatrix) * normal;
+            animModelMatrix += weight[i] * boneModelMatrix[index[i]];
+            animNormalMatrix += weight[i] * boneNormalMatrix[index[i]];
         }
     }
+    vec4 modelPosition;
     if (check){
-        modelPosition = modelMatrix * bonePosition;
-        normalVariable = mat3(modelMatrix) * boneNormal;
+        modelPosition = position * animModelMatrix;
+        modelPosition = modelMatrix * modelPosition;
+        vec3 tempNormal = normal * mat3(animNormalMatrix);
+        normalVariable = mat3(modelMatrix) * tempNormal;
     }
     else {
         modelPosition = modelMatrix * position;

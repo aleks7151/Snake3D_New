@@ -7,12 +7,11 @@ public class Bone {
     private String name = null;
     private float[] invertMatrix = null;
     private float[] beginBoneMatrix = null;
-    private Bone parent = null;
+    public List<Bone> childs = null;
 
     private List<Float> time = null;
     private List<float[]> animMatrix = null;
 
-    private boolean needUpdate = true;
     private float[] matrixNow = null;
 
     private int indexBone;
@@ -51,24 +50,8 @@ public class Bone {
         this.beginBoneMatrix = beginBoneMatrix;
     }
 
-    public void setParent(Bone parent) {
-        this.parent = parent;
-    }
-
     public float[] getBeginBoneMatrix() {
         return beginBoneMatrix;
-    }
-
-    public Bone getParent() {
-        return parent;
-    }
-
-    public void setNeedUpdate(boolean needUpdate) {
-        this.needUpdate = needUpdate;
-    }
-
-    public boolean getNeedUpdate(){
-        return needUpdate;
     }
 
     public void setMatrixNow(float[] matrixNow) {
@@ -85,12 +68,25 @@ public class Bone {
 
     @Override
     public String toString() {
+        StringBuilder namesChilds = new StringBuilder();
+        if (childs != null){
+            for (Bone boneChild : childs){
+                namesChilds.append(boneChild.getName()).append("   ");
+            }
+        }
+        else {
+            namesChilds.append("null");
+        }
         return "Bone{" +
-                "name='" + name + '\'' +
-                ", invertMatrix=" + Arrays.toString(invertMatrix) +
-                ", beginBoneMatrix=" + Arrays.toString(beginBoneMatrix) +
-                ", time=" + time +
-                ", parent=" + (parent == null ? "null" : parent.getName()) +
+                "\nname='" + name + "'" + "\n" +
+//                ", invertMatrix=" + Arrays.toString(invertMatrix) + "\n" +
+//                ", beginBoneMatrix=" + Arrays.toString(beginBoneMatrix) + "\n" +
+                ", childs=" + namesChilds.toString() + "\n" +
+//                ", time=" + time + "\n" +
+//                ", animMatrix=" + animMatrix + "\n" +
+//                ", needUpdate=" + needUpdate + "\n" +
+//                ", matrixNow=" + Arrays.toString(matrixNow) + "\n" +
+                ", indexBone=" + indexBone + "\n" +
                 '}';
     }
 }
