@@ -7,11 +7,8 @@ import android.view.MotionEvent;
 import com.example.snake3d_new.openGL.game.logik.snakeAndFood.DrawFood;
 import com.example.snake3d_new.openGL.game.logik.snakeAndFood.DrawSnake;
 import com.example.snake3d_new.openGL.game.logik.snakeAndFood.SnakeBackend;
-import com.example.snake3d_new.openGL.game.model.Bone;
 import com.example.snake3d_new.openGL.game.model.Model;
 import com.example.snake3d_new.openGL.game.utils.MatrixEnum;
-
-import java.util.Arrays;
 
 import static android.opengl.GLES20.GL_BACK;
 import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
@@ -29,7 +26,6 @@ import static android.opengl.GLES20.glBindTexture;
 import static android.opengl.GLES20.glClear;
 import static android.opengl.GLES20.glCullFace;
 import static android.opengl.GLES20.glDrawArrays;
-import static android.opengl.GLES20.glGetUniformLocation;
 import static android.opengl.GLES20.glUniform4f;
 import static android.opengl.GLES20.glUniformMatrix4fv;
 import static android.opengl.GLES20.glUseProgram;
@@ -144,56 +140,29 @@ public class Draw {
 //        drawFood.draw();
 //
 //        drawPlane();
-//        drawFreedom();
+        drawFreedom();
 
-        testRekurs(TEST_MODEL.rootBone, null, 2);
+        if (firstRaz){
+            firstRaz = false;
+            timeBegin = (float) (System.nanoTime() / Math.pow(10, 6));
+            time = timeBegin;
+        }
+        else
+            time = (float) (System.nanoTime() / Math.pow(10, 6));
+
+        Animation.animate(TEST_MODEL.rootBone, null, time - timeBegin, initGL.programId);
         setColor(1, 0, 0);
-        translateM(0, 6, 0);
         rotateM(angle0, 0, 1, 0);
         angle0 += 0.5f;
         bindMatrix();
         drawTriangles(TEST_MODEL);
         setIdentityM(translate, rotate, scale);
         bindMatrix();
-
-
-        testRekurs(TEST_MODEL.rootBone, null, 1);
-        setColor(1, 0, 0);
-        translateM(0, -6, 0);
-        rotateM(angle1 + 90, 0, 1, 0);
-        angle1 += 0.5f;
-        bindMatrix();
-        drawTriangles(TEST_MODEL);
-        setIdentityM(translate, rotate, scale);
-        bindMatrix();
     }
     float angle0 = 0;
-    float angle1 = 0;
-
-    private void testRekurs(Bone bone, Bone parent, int anim) {
-        float[] matrix = new float[16];
-        float[] invert = new float[16];
-        if (parent == null){
-            matrix = Arrays.copyOf(bone.getAnimMatrix().get(anim), 16);
-            Matrix.multiplyMM(invert, 0, bone.getInvertMatrix(), 0, matrix, 0);
-        }
-        else {
-            Matrix.multiplyMM(matrix, 0, bone.getAnimMatrix().get(anim), 0, parent.getMatrixNow(), 0);
-            Matrix.multiplyMM(invert, 0, bone.getInvertMatrix(), 0, matrix, 0);
-        }
-        bone.setMatrixNow(matrix);
-
-        float[] forNormal = Arrays.copyOf(invert, 16);
-        Matrix.transposeM(forNormal, 0, invert, 0);
-        Matrix.invertM(forNormal, 0, forNormal, 0);
-
-        glUniformMatrix4fv(glGetUniformLocation(initGL.programId, "boneModelMatrix[" + bone.getIndexBone() + ']'), 1, false, invert, 0);
-        glUniformMatrix4fv(glGetUniformLocation(initGL.programId, "boneNormalMatrix[" + bone.getIndexBone() + ']'), 1, false, forNormal, 0);
-        if (bone.childs != null){
-            for (Bone child : bone.childs)
-                testRekurs(child, bone, anim);
-        }
-    }
+    public static float time = 0;
+    public static float timeBegin = 0;
+    public static boolean firstRaz = true;
 
     private void drawPlane() {
         setColor(0.5f, 0.5f, 0.5f);

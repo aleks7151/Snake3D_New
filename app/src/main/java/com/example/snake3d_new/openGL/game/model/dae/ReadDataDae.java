@@ -136,6 +136,9 @@ public class ReadDataDae {
             UtilsDae.toFloatFromString(time, stringTime);
             UtilsDae.toFloatArrayFromString(boneAnimMatrix, stringBoneMatrix, STRIDE_MATRIX);
 
+            for (int k = 0; k < time.size(); k++)//Переводим в милисекунды
+                time.set(k, time.get(k) * 1000);
+
             Bone bone = mapBones.get(nameBones.get(i));
             bone.setTime(time);
             bone.setAnimMatrix(boneAnimMatrix);
