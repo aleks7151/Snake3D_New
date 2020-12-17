@@ -145,12 +145,18 @@ public class Draw {
         if (firstRaz){
             firstRaz = false;
             timeBegin = (float) (System.nanoTime() / Math.pow(10, 6));
-            time = timeBegin;
+//            time = timeBegin;
+            timeCurrent = 100000000f;
         }
-        else
-            time = (float) (System.nanoTime() / Math.pow(10, 6));
+        else {
+            Log.d("what are fuck", String.format("%.1f", timeCurrent));
+//            time += 1;
+            timeCurrent = timeCurrent + 17;
+            Log.d("time", String.format("%.1f", timeCurrent));
+        }
+//            time = (float) (System.nanoTime() / Math.pow(10, 6));
 
-        Animation.animate(TEST_MODEL.rootBone, null, time - timeBegin, initGL.programId);
+        Animation.animate(TEST_MODEL.rootBone, null, (float)timeCurrent - timeBegin, initGL.programId);
         setColor(1, 0, 0);
         rotateM(angle0, 0, 1, 0);
         angle0 += 0.5f;
@@ -160,7 +166,7 @@ public class Draw {
         bindMatrix();
     }
     float angle0 = 0;
-    public static float time = 0;
+    public static double timeCurrent = 0;
     public static float timeBegin = 0;
     public static boolean firstRaz = true;
 
