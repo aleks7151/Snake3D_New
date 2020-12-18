@@ -126,20 +126,22 @@ public class ReadDataDae {
 
     public void getAnimations(List<String> listAnimations, List<String> nameBones) {
         for (int i = 0; i < bonesAmount; i++) {
-            List<Float> time = new ArrayList<>();
+            List<Double> time = new ArrayList<>();
             List<float[]> boneAnimMatrix = new ArrayList<>();
 
             String stringTime = listAnimations.get(i * 3);
             String stringBoneMatrix = listAnimations.get(i * 3 + 1);
             String stringTypeInterpoletion = listAnimations.get(i * 3 + 2);
 
-            UtilsDae.toFloatFromString(time, stringTime);
+            UtilsDae.toDoubleFromString(time, stringTime);
             UtilsDae.toFloatArrayFromString(boneAnimMatrix, stringBoneMatrix, STRIDE_MATRIX);
 
             for (int k = 0; k < time.size(); k++)//Переводим в милисекунды
                 time.set(k, time.get(k) * 1000);
 
             Bone bone = mapBones.get(nameBones.get(i));
+            if (bone == null)
+                Log.d("Еррор", "Проблема при чтении имен");
             bone.setTime(time);
             bone.setAnimMatrix(boneAnimMatrix);
         }

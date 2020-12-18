@@ -9,7 +9,7 @@ public class Bone {
     private float[] beginBoneMatrix = null;
     public List<Bone> childs = null;
 
-    private List<Float> time = null;
+    private List<Double> time = null;
     private List<float[]> animMatrix = null;
 
     private float[] matrixNow = null;
@@ -30,7 +30,7 @@ public class Bone {
         return invertMatrix;
     }
 
-    public void setTime(List<Float> time) {
+    public void setTime(List<Double> time) {
         this.time = time;
     }
 
@@ -38,7 +38,7 @@ public class Bone {
         this.animMatrix = animMatrix;
     }
 
-    public List<Float> getTime() {
+    public List<Double> getTime() {
         return time;
     }
 

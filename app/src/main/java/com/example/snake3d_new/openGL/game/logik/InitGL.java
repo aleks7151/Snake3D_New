@@ -288,7 +288,7 @@ public class InitGL {
         KUB = GetDataDae.getModel(assets, "models/kub.dae");
         PLANE = GetDataDae.getModel(assets, "models/plane.dae");
         POINT = GetDataDae.getPoint();
-        TEST_MODEL = GetDataDae.getModel(assets, "models/kloun.dae");
+        TEST_MODEL = GetDataDae.getModel(assets, "models/salto0.dae");
         float[] normal = getNotPointsFloat(KUB.normal, PLANE.normal, POINT.normal, TEST_MODEL.normal);
         float[] texture = getNotPointsFloat(KUB.color, PLANE.color, POINT.color, TEST_MODEL.color);
         int[] index = getNotPointsInt(KUB.index, PLANE.index, POINT.index, TEST_MODEL.index);

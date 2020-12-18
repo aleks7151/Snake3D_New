@@ -12,24 +12,24 @@ import static android.opengl.GLES20.glGetUniformLocation;
 import static android.opengl.GLES20.glUniformMatrix4fv;
 
 public class Animation {
-    public static void animate(Bone bone, Bone parent, float time, int program) {
+    public static void animate(Bone bone, Bone parent, double time, int program) {
         float[] matrix = new float[16];
         float[] invert = new float[16];
         if (parent == null){
 
-            List<Float> listTime = bone.getTime();
+            List<Double> listTime = bone.getTime();
             for (int i = listTime.size() - 1; i >= 0; i--){
                 if (time > listTime.get(i)){
                     if (i == listTime.size() - 1){
                         Draw.timeBegin += listTime.get(i);
-                        animate(bone, parent, time - Draw.timeBegin, program);//При условии, что у нас один массив времени на все кости, иначе переменная timeBegin должна быть массивом
+                        animate(bone, parent, time - (float)Draw.timeBegin, program);//При условии, что у нас один массив времени на все кости, иначе переменная timeBegin должна быть массивом
                         return;
                     }
-                    float koef = (time - listTime.get(i)) / (listTime.get(i + 1) - listTime.get(i));
+                    double koef = (time - listTime.get(i)) / (listTime.get(i + 1) - listTime.get(i));
                     float[] mat1 = Arrays.copyOf(bone.getAnimMatrix().get(i), 16);
                     float[] mat2 = Arrays.copyOf(bone.getAnimMatrix().get(i + 1), 16);
                     for (int k = 0; k < 16; k++){
-                        matrix[k] = mat1[k] * koef + mat2[k] * (1f - koef);
+                        matrix[k] = (float) (mat1[k] * (1 - koef) + mat2[k] * koef);
                     }
                     break;
                 }
@@ -46,7 +46,7 @@ public class Animation {
         }
         else {
             float[] nu = new float[16];
-            List<Float> listTime = bone.getTime();
+            List<Double> listTime = bone.getTime();
             for (int i = listTime.size() - 1; i >= 0; i--){
                 if (time > listTime.get(i)){
                     if (i == listTime.size() - 1){
@@ -55,11 +55,11 @@ public class Animation {
 //                        animate(bone, parent, time - Draw.timeBegin, program);//При условии, что у нас один массив времени на все кости, иначе переменная timeBegin должна быть массивом
 //                        return;
                     }
-                    float koef = (time - listTime.get(i)) / (listTime.get(i + 1) - listTime.get(i));
+                    double koef = (time - listTime.get(i)) / (listTime.get(i + 1) - listTime.get(i));
                     float[] mat1 = Arrays.copyOf(bone.getAnimMatrix().get(i), 16);
                     float[] mat2 = Arrays.copyOf(bone.getAnimMatrix().get(i + 1), 16);
                     for (int k = 0; k < 16; k++){
-                        nu[k] = mat1[k] * koef + mat2[k] * (1f - koef);
+                        nu[k] = (float) (mat1[k] * (1 - koef) + mat2[k] * koef);
                     }
                     break;
                 }

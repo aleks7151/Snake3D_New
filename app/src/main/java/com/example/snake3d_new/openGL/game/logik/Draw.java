@@ -144,21 +144,26 @@ public class Draw {
 
         if (firstRaz){
             firstRaz = false;
-            timeBegin = (float) (System.nanoTime() / Math.pow(10, 6));
-//            time = timeBegin;
-            timeCurrent = 100000000f;
+            timeBegin = System.nanoTime() / Math.pow(10, 6);
+            timeCurrent = timeBegin;
+//            timeCurrent = 100000000f;
         }
         else {
-            Log.d("what are fuck", String.format("%.1f", timeCurrent));
-//            time += 1;
-            timeCurrent = timeCurrent + 17;
-            Log.d("time", String.format("%.1f", timeCurrent));
+            timeCurrent = System.nanoTime() / Math.pow(10, 6);
+//            Log.d("what are fuck", String.format("%.1f", timeCurrent));
+//            timeCurrent += 1;
+//            timeCurrent = timeCurrent + 17;
+//            Log.d("time", String.format("%.1f", timeCurrent));
         }
 //            time = (float) (System.nanoTime() / Math.pow(10, 6));
 
-        Animation.animate(TEST_MODEL.rootBone, null, (float)timeCurrent - timeBegin, initGL.programId);
+        Animation.animate(TEST_MODEL.rootBone, null, timeCurrent - timeBegin, initGL.programId);
         setColor(1, 0, 0);
-        rotateM(angle0, 0, 1, 0);
+//        rotateM(angle0, 0, 1, 0);
+//        rotateM(20, 1, 0, 0);
+        rotateM(90, 0, 0, 1);
+        rotateM(90, 0, 1, 0);
+        translateM(0, 0, -20);
         angle0 += 0.5f;
         bindMatrix();
         drawTriangles(TEST_MODEL);
@@ -167,7 +172,7 @@ public class Draw {
     }
     float angle0 = 0;
     public static double timeCurrent = 0;
-    public static float timeBegin = 0;
+    public static double timeBegin = 0;
     public static boolean firstRaz = true;
 
     private void drawPlane() {

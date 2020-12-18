@@ -92,4 +92,15 @@ public class UtilsDae {
             Log.d("MyLog", "Fucck\n" + e);
         }
     }
+
+    public static void toDoubleFromString(List<Double> list, String str) {
+        try (Scanner scanner = new Scanner(str)){
+            while (scanner.hasNext()) {
+                list.add(Double.parseDouble(scanner.next()));
+            }
+        }
+        catch (Exception e){
+            Log.d("MyLog", "Fucck\n" + e);
+        }
+    }
 }
