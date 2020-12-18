@@ -162,7 +162,8 @@ public class Draw {
 //        rotateM(angle0, 0, 1, 0);
 //        rotateM(20, 1, 0, 0);
         rotateM(90, 0, 0, 1);
-        rotateM(90, 0, 1, 0);
+        rotateM(140, 0, -1, 0);
+        rotateM(180, 1, 0, 0);
         translateM(0, 0, -20);
         angle0 += 0.5f;
         bindMatrix();
