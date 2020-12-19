@@ -1,9 +1,8 @@
-package com.example.snake3d_new.openGL.game.model.dae;
+package com.example.snake3d_new.openGL.game.dae;
 
 import android.content.res.AssetManager;
 import android.util.Log;
 
-import com.example.snake3d_new.openGL.game.model.Bone;
 import com.example.snake3d_new.openGL.game.model.Model;
 
 import org.w3c.dom.Document;
@@ -11,9 +10,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 

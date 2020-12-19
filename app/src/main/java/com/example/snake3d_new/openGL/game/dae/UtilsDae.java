@@ -1,4 +1,4 @@
-package com.example.snake3d_new.openGL.game.model.dae;
+package com.example.snake3d_new.openGL.game.dae;
 
 import android.util.Log;
 

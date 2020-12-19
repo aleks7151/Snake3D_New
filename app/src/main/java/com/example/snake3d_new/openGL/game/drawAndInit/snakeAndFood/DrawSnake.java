@@ -1,19 +1,19 @@
-package com.example.snake3d_new.openGL.game.logik.snakeAndFood;
+package com.example.snake3d_new.openGL.game.drawAndInit.snakeAndFood;
 
 import android.view.MotionEvent;
 
-import com.example.snake3d_new.openGL.game.logik.Draw;
-import com.example.snake3d_new.openGL.game.logik.WhatProgram;
-import com.example.snake3d_new.openGL.game.logik.snakeAndFood.utils.Coord;
+import com.example.snake3d_new.openGL.game.drawAndInit.Draw;
+import com.example.snake3d_new.openGL.game.utils.WhatProgram;
+import com.example.snake3d_new.openGL.game.drawAndInit.snakeAndFood.utils.Coord;
 
 import java.util.List;
 
-import static com.example.snake3d_new.openGL.game.logik.InitGL.KUB;
-import static com.example.snake3d_new.openGL.game.logik.WhatProgram.eProgramShadow;
-import static com.example.snake3d_new.openGL.game.logik.snakeAndFood.utils.Direction.DOWN;
-import static com.example.snake3d_new.openGL.game.logik.snakeAndFood.utils.Direction.LEFT;
-import static com.example.snake3d_new.openGL.game.logik.snakeAndFood.utils.Direction.RIGHT;
-import static com.example.snake3d_new.openGL.game.logik.snakeAndFood.utils.Direction.UP;
+import static com.example.snake3d_new.openGL.game.drawAndInit.InitGL.KUB;
+import static com.example.snake3d_new.openGL.game.utils.WhatProgram.eProgramShadow;
+import static com.example.snake3d_new.openGL.game.drawAndInit.snakeAndFood.utils.Direction.DOWN;
+import static com.example.snake3d_new.openGL.game.drawAndInit.snakeAndFood.utils.Direction.LEFT;
+import static com.example.snake3d_new.openGL.game.drawAndInit.snakeAndFood.utils.Direction.RIGHT;
+import static com.example.snake3d_new.openGL.game.drawAndInit.snakeAndFood.utils.Direction.UP;
 import static com.example.snake3d_new.openGL.game.utils.Constants.X_BEGIN;
 import static com.example.snake3d_new.openGL.game.utils.Constants.Y_BEGIN;
 import static com.example.snake3d_new.openGL.game.utils.Constants.Z_BEGIN;

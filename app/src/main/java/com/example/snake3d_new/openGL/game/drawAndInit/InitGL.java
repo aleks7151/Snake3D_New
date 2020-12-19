@@ -1,12 +1,14 @@
-package com.example.snake3d_new.openGL.game.logik;
+package com.example.snake3d_new.openGL.game.drawAndInit;
 
 import android.content.res.AssetManager;
 import android.opengl.Matrix;
 
-import com.example.snake3d_new.openGL.game.model.dae.GetDataDae;
+import com.example.snake3d_new.openGL.game.dae.GetDataDae;
 import com.example.snake3d_new.openGL.game.model.Model;
 import com.example.snake3d_new.openGL.game.utils.Order;
 import com.example.snake3d_new.openGL.game.utils.ShaderUtils;
+import com.example.snake3d_new.openGL.game.utils.TypeAnimaion;
+import com.example.snake3d_new.openGL.game.utils.WhatProgram;
 
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
@@ -15,7 +17,6 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 
-import static android.opengl.GLES10.GL_FOG;
 import static android.opengl.GLES10.glGenTextures;
 import static android.opengl.GLES20.GL_ARRAY_BUFFER;
 import static android.opengl.GLES20.GL_CLAMP_TO_EDGE;
@@ -289,6 +290,7 @@ public class InitGL {
         PLANE = GetDataDae.getModel(assets, "models/plane.dae");
         POINT = GetDataDae.getPoint();
         TEST_MODEL = GetDataDae.getModel(assets, "models/shedever.dae");
+        TEST_MODEL.animation = new Animation(TypeAnimaion.ONCE);
         float[] normal = getNotPointsFloat(KUB.normal, PLANE.normal, POINT.normal, TEST_MODEL.normal);
         float[] texture = getNotPointsFloat(KUB.color, PLANE.color, POINT.color, TEST_MODEL.color);
         int[] index = getNotPointsInt(KUB.index, PLANE.index, POINT.index, TEST_MODEL.index);

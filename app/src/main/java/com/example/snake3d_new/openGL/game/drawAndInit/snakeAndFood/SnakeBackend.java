@@ -1,16 +1,15 @@
-package com.example.snake3d_new.openGL.game.logik.snakeAndFood;
+package com.example.snake3d_new.openGL.game.drawAndInit.snakeAndFood;
 
-import com.example.snake3d_new.openGL.game.logik.Draw;
-import com.example.snake3d_new.openGL.game.logik.snakeAndFood.utils.Coord;
-import com.example.snake3d_new.openGL.game.logik.snakeAndFood.utils.Direction;
+import com.example.snake3d_new.openGL.game.drawAndInit.snakeAndFood.utils.Coord;
+import com.example.snake3d_new.openGL.game.drawAndInit.snakeAndFood.utils.Direction;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.snake3d_new.openGL.game.logik.snakeAndFood.utils.Direction.DOWN;
-import static com.example.snake3d_new.openGL.game.logik.snakeAndFood.utils.Direction.LEFT;
-import static com.example.snake3d_new.openGL.game.logik.snakeAndFood.utils.Direction.RIGHT;
-import static com.example.snake3d_new.openGL.game.logik.snakeAndFood.utils.Direction.UP;
+import static com.example.snake3d_new.openGL.game.drawAndInit.snakeAndFood.utils.Direction.DOWN;
+import static com.example.snake3d_new.openGL.game.drawAndInit.snakeAndFood.utils.Direction.LEFT;
+import static com.example.snake3d_new.openGL.game.drawAndInit.snakeAndFood.utils.Direction.RIGHT;
+import static com.example.snake3d_new.openGL.game.drawAndInit.snakeAndFood.utils.Direction.UP;
 import static com.example.snake3d_new.openGL.game.utils.Constants.AMOUNT_X;
 import static com.example.snake3d_new.openGL.game.utils.Constants.AMOUNT_Y;
 import static com.example.snake3d_new.openGL.game.utils.Constants.QUANTITY_SNAKE;

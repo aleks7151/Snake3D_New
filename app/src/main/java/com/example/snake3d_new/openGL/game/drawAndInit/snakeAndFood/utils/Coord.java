@@ -1,4 +1,4 @@
-package com.example.snake3d_new.openGL.game.logik.snakeAndFood.utils;
+package com.example.snake3d_new.openGL.game.drawAndInit.snakeAndFood.utils;
 
 public class Coord {
     private double x;

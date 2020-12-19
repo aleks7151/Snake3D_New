@@ -5,9 +5,8 @@ import android.opengl.GLSurfaceView;
 import android.util.Log;
 import android.view.MotionEvent;
 
-import com.example.snake3d_new.openGL.game.logik.Draw;
-import com.example.snake3d_new.openGL.game.logik.InitGL;
-import com.example.snake3d_new.openGL.game.logik.snakeAndFood.DrawFood;
+import com.example.snake3d_new.openGL.game.drawAndInit.Draw;
+import com.example.snake3d_new.openGL.game.drawAndInit.InitGL;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;

@@ -1,12 +1,12 @@
-package com.example.snake3d_new.openGL.game.logik;
+package com.example.snake3d_new.openGL.game.drawAndInit;
 
 import android.opengl.Matrix;
 import android.util.Log;
 import android.view.MotionEvent;
 
-import com.example.snake3d_new.openGL.game.logik.snakeAndFood.DrawFood;
-import com.example.snake3d_new.openGL.game.logik.snakeAndFood.DrawSnake;
-import com.example.snake3d_new.openGL.game.logik.snakeAndFood.SnakeBackend;
+import com.example.snake3d_new.openGL.game.drawAndInit.snakeAndFood.DrawFood;
+import com.example.snake3d_new.openGL.game.drawAndInit.snakeAndFood.DrawSnake;
+import com.example.snake3d_new.openGL.game.drawAndInit.snakeAndFood.SnakeBackend;
 import com.example.snake3d_new.openGL.game.model.Model;
 import com.example.snake3d_new.openGL.game.utils.MatrixEnum;
 
@@ -30,11 +30,11 @@ import static android.opengl.GLES20.glUniform4f;
 import static android.opengl.GLES20.glUniformMatrix4fv;
 import static android.opengl.GLES20.glUseProgram;
 import static android.opengl.GLES30.glBindVertexArray;
-import static com.example.snake3d_new.openGL.game.logik.InitGL.PLANE;
-import static com.example.snake3d_new.openGL.game.logik.InitGL.POINT;
-import static com.example.snake3d_new.openGL.game.logik.InitGL.TEST_MODEL;
-import static com.example.snake3d_new.openGL.game.logik.WhatProgram.eProgramId;
-import static com.example.snake3d_new.openGL.game.logik.WhatProgram.eProgramShadow;
+import static com.example.snake3d_new.openGL.game.drawAndInit.InitGL.PLANE;
+import static com.example.snake3d_new.openGL.game.drawAndInit.InitGL.POINT;
+import static com.example.snake3d_new.openGL.game.drawAndInit.InitGL.TEST_MODEL;
+import static com.example.snake3d_new.openGL.game.utils.WhatProgram.eProgramId;
+import static com.example.snake3d_new.openGL.game.utils.WhatProgram.eProgramShadow;
 import static com.example.snake3d_new.openGL.game.utils.Constants.AMOUNT_X;
 import static com.example.snake3d_new.openGL.game.utils.Constants.AMOUNT_Y;
 import static com.example.snake3d_new.openGL.game.utils.Constants.X_BEGIN;
@@ -144,20 +144,10 @@ public class Draw {
 
         if (firstRaz){
             firstRaz = false;
-            timeBegin = System.nanoTime() / Math.pow(10, 6);
-            timeCurrent = timeBegin;
-//            timeCurrent = 100000000f;
+            TEST_MODEL.animation.setTime();
         }
-        else {
-            timeCurrent = System.nanoTime() / Math.pow(10, 6);
-//            Log.d("what are fuck", String.format("%.1f", timeCurrent));
-//            timeCurrent += 1;
-//            timeCurrent = timeCurrent + 17;
-//            Log.d("time", String.format("%.1f", timeCurrent));
-        }
-//            time = (float) (System.nanoTime() / Math.pow(10, 6));
 
-        Animation.animate(TEST_MODEL.rootBone, null, timeCurrent - timeBegin, initGL.programId);
+        TEST_MODEL.animate(TEST_MODEL.rootBone, null, initGL.programId);
         setColor(1, 0, 0);
 //        rotateM(angle0, 0, 1, 0);
 //        rotateM(20, 1, 0, 0);
@@ -172,8 +162,6 @@ public class Draw {
         bindMatrix();
     }
     float angle0 = 0;
-    public static double timeCurrent = 0;
-    public static double timeBegin = 0;
     public static boolean firstRaz = true;
 
     private void drawPlane() {
