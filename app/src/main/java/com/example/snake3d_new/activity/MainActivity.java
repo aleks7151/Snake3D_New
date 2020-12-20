@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
             }
             @Override
             public void onAnimationEnd(Animation animation) {
-                Intent intent = new Intent(".GameActivity");
+                Intent intent = new Intent(".GameActivityNew");
                 startActivity(intent);
             }
             @Override

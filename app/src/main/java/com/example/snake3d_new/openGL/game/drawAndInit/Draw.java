@@ -32,7 +32,7 @@ import static android.opengl.GLES20.glUseProgram;
 import static android.opengl.GLES30.glBindVertexArray;
 import static com.example.snake3d_new.openGL.game.drawAndInit.InitGL.PLANE;
 import static com.example.snake3d_new.openGL.game.drawAndInit.InitGL.POINT;
-import static com.example.snake3d_new.openGL.game.drawAndInit.InitGL.TEST_MODEL;
+import static com.example.snake3d_new.openGL.game.drawAndInit.InitGL.ANIMATE_MODEL;
 import static com.example.snake3d_new.openGL.game.utils.WhatProgram.eProgramId;
 import static com.example.snake3d_new.openGL.game.utils.WhatProgram.eProgramShadow;
 import static com.example.snake3d_new.openGL.game.utils.Constants.AMOUNT_X;
@@ -138,24 +138,30 @@ public class Draw {
         glBindVertexArray(initGL.vaoMain.get(0));
 //        drawSnake.draw(initGL.program);
 //        drawFood.draw();
-//
+
 //        drawPlane();
         drawFreedom();
 
-        TEST_MODEL.animate(initGL.programId);
-        setColor(1, 0, 0);
+        drawTest();
+    }
+
+    private void drawTest() {
+        ANIMATE_MODEL.animate(initGL.programId);
+        setColor(1, 0.3f, 0.3f);
 //        rotateM(angle0, 0, 1, 0);
 //        rotateM(20, 1, 0, 0);
         rotateM(90, 0, 0, 1);
         rotateM(140, 0, -1, 0);
         rotateM(180, 1, 0, 0);
-        translateM(0, 0, -20);
+        rotateM(angle0, 0, 0, 1);
         angle0 += 0.5f;
+        translateM(0, 0, 0);
         bindMatrix();
-        drawTriangles(TEST_MODEL);
+        drawTriangles(ANIMATE_MODEL);
         setIdentityM(translate, rotate, scale);
         bindMatrix();
     }
+
     float angle0 = 0;
 
     private void drawPlane() {

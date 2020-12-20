@@ -1,4 +1,4 @@
-package com.example.snake3d_new.openGL.game.drawAndInit;
+package com.example.snake3d_new.openGL.game.model;
 
 import android.opengl.Matrix;
 import android.util.Log;

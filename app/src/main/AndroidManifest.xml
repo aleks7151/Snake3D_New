@@ -9,9 +9,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/FullscreenThemeRed">
-        <activity android:name=".activity.GameActivity">
+        <activity android:name=".activity.GameActivityNew">
             <intent-filter>
-                <action android:name=".GameActivity" />
+                <action android:name=".GameActivityNew" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>

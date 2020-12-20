@@ -4,6 +4,7 @@ import android.content.res.AssetManager;
 import android.opengl.Matrix;
 
 import com.example.snake3d_new.openGL.game.dae.GetDataDae;
+import com.example.snake3d_new.openGL.game.model.Animation;
 import com.example.snake3d_new.openGL.game.model.Model;
 import com.example.snake3d_new.openGL.game.utils.Order;
 import com.example.snake3d_new.openGL.game.utils.ShaderUtils;
@@ -114,7 +115,7 @@ public class InitGL {
     public static Model KUB;
     public static Model PLANE;
     public static Model POINT;
-    public static Model TEST_MODEL;
+    public static Model ANIMATE_MODEL;
 
     public InitGL(int width, int height){
         this.width = width;
@@ -289,17 +290,17 @@ public class InitGL {
         KUB = GetDataDae.getModel(assets, "models/kub.dae");
         PLANE = GetDataDae.getModel(assets, "models/plane.dae");
         POINT = GetDataDae.getPoint();
-        TEST_MODEL = GetDataDae.getModel(assets, "models/shedever.dae");
-        TEST_MODEL.animation = new Animation(TypeAnimaion.PENDULUM);
-        float[] normal = getNotPointsFloat(KUB.normal, PLANE.normal, POINT.normal, TEST_MODEL.normal);
-        float[] texture = getNotPointsFloat(KUB.color, PLANE.color, POINT.color, TEST_MODEL.color);
-        int[] index = getNotPointsInt(KUB.index, PLANE.index, POINT.index, TEST_MODEL.index);
-        float[] weight = getNotPointsFloat(KUB.weight, PLANE.weight, POINT.weight, TEST_MODEL.weight);
-        float[] mesh = getPoints(KUB.position, PLANE.position, POINT.position, TEST_MODEL.position);
+        ANIMATE_MODEL = GetDataDae.getModel(assets, "models/dick.dae");
+        ANIMATE_MODEL.animation = new Animation(TypeAnimaion.REPEAT);
+        float[] normal = getNotPointsFloat(KUB.normal, PLANE.normal, POINT.normal, ANIMATE_MODEL.normal);
+        float[] texture = getNotPointsFloat(KUB.color, PLANE.color, POINT.color, ANIMATE_MODEL.color);
+        int[] index = getNotPointsInt(KUB.index, PLANE.index, POINT.index, ANIMATE_MODEL.index);
+        float[] weight = getNotPointsFloat(KUB.weight, PLANE.weight, POINT.weight, ANIMATE_MODEL.weight);
+        float[] mesh = getPoints(KUB.position, PLANE.position, POINT.position, ANIMATE_MODEL.position);
         KUB.order = 0;
         PLANE.order = 1;
         POINT.order = 2;
-        TEST_MODEL.order = 3;
+        ANIMATE_MODEL.order = 3;
         vertexPut(mesh, normal, texture, weight, index);
     }
 

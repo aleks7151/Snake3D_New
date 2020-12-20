@@ -2,12 +2,6 @@ package com.example.snake3d_new.openGL.game.model;
 
 import android.util.Log;
 
-import com.example.snake3d_new.openGL.game.drawAndInit.Animation;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 public class Model {
     public int order;//Для порядковой отрисовки
 

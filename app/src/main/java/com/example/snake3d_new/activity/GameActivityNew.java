@@ -7,7 +7,7 @@ import android.os.Bundle;
 import com.example.snake3d_new.R;
 import com.example.snake3d_new.openGL.game.Render;
 
-public class GameActivity extends AppCompatActivity {
+public class GameActivityNew extends AppCompatActivity {
     private Render render;
 
     @Override
