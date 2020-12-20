@@ -142,12 +142,7 @@ public class Draw {
 //        drawPlane();
         drawFreedom();
 
-        if (firstRaz){
-            firstRaz = false;
-            TEST_MODEL.animation.setTime();
-        }
-
-        TEST_MODEL.animate(TEST_MODEL.rootBone, null, initGL.programId);
+        TEST_MODEL.animate(initGL.programId);
         setColor(1, 0, 0);
 //        rotateM(angle0, 0, 1, 0);
 //        rotateM(20, 1, 0, 0);
@@ -162,7 +157,6 @@ public class Draw {
         bindMatrix();
     }
     float angle0 = 0;
-    public static boolean firstRaz = true;
 
     private void drawPlane() {
         setColor(0.5f, 0.5f, 0.5f);
