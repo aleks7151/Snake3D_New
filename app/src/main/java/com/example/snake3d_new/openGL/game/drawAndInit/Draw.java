@@ -9,6 +9,7 @@ import com.example.snake3d_new.openGL.game.drawAndInit.snakeAndFood.DrawSnake;
 import com.example.snake3d_new.openGL.game.drawAndInit.snakeAndFood.SnakeBackend;
 import com.example.snake3d_new.openGL.game.model.Model;
 import com.example.snake3d_new.openGL.game.utils.MatrixEnum;
+import com.example.snake3d_new.openGL.game.utils.WhatProgram;
 
 import static android.opengl.GLES20.GL_BACK;
 import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
@@ -26,6 +27,7 @@ import static android.opengl.GLES20.glBindTexture;
 import static android.opengl.GLES20.glClear;
 import static android.opengl.GLES20.glCullFace;
 import static android.opengl.GLES20.glDrawArrays;
+import static android.opengl.GLES20.glUniform1i;
 import static android.opengl.GLES20.glUniform4f;
 import static android.opengl.GLES20.glUniformMatrix4fv;
 import static android.opengl.GLES20.glUseProgram;
@@ -52,11 +54,13 @@ public class Draw {
     private InitGL initGL;
     private DrawSnake drawSnake;
     private DrawFood drawFood;
+    private DrawFence drawFence;
 
     public Draw(InitGL initGL){
         this.initGL = initGL;
         drawFood = new DrawFood(this);
-        SnakeBackend snakeBackend = new SnakeBackend(drawFood);
+        drawFence = new DrawFence(this);
+        SnakeBackend snakeBackend = new SnakeBackend(drawFood, drawFence);
         drawSnake = new DrawSnake(this, snakeBackend);
     }
 
@@ -75,13 +79,13 @@ public class Draw {
     public void bindMatrix(){
         Matrix.multiplyMM(initGL.modelMatrix, 0, initGL.translateMatrix, 0, initGL.rotateMatrix, 0);
         Matrix.multiplyMM(initGL.modelMatrix, 0, initGL.modelMatrix, 0, initGL.scaleMatrix, 0);
-        if (initGL.program == eProgramId) {
+        if (InitGL.PROGRAM_TYPE == eProgramId) {
             glUniformMatrix4fv(initGL.locationModelMatrix, 1, false, initGL.modelMatrix, 0);
             Matrix.invertM(initGL.normalMatrix, 0, initGL.modelMatrix, 0);
             Matrix.transposeM(initGL.normalMatrix, 0, initGL.normalMatrix, 0);
             glUniformMatrix4fv(initGL.locationNormalMatrix, 1, false, initGL.normalMatrix, 0);
         }
-        else if (initGL.program == eProgramShadow)
+        else if (InitGL.PROGRAM_TYPE == eProgramShadow)
             glUniformMatrix4fv(initGL.locationModelMatrixShadow, 1, false, initGL.modelMatrix, 0);
     }
 
@@ -109,9 +113,21 @@ public class Draw {
     }
 
     public void setColor(float r, float g, float b){
-        if (initGL.program != eProgramId)
+        if (InitGL.PROGRAM_TYPE != eProgramId)
             return;
         glUniform4f(initGL.locationColor, r, g, b, 1);
+    }
+
+    public void setNeedBone(boolean needBone){
+        glUniform1i(initGL.locationNeedBone, needBone ? 1 : 0);
+    }
+
+    private void setProgram(WhatProgram eProgram) {
+        InitGL.PROGRAM_TYPE = eProgram;
+        if (eProgram == eProgramShadow)
+            InitGL.PROGRAM_INT = initGL.programShadow;
+        else if (eProgram == eProgramId)
+            InitGL.PROGRAM_INT = initGL.programId;
     }
 
     public void touchEvent(MotionEvent event, float width, float height) {
@@ -123,10 +139,10 @@ public class Draw {
         glCullFace(GL_FRONT);
         glBindFramebuffer(GL_FRAMEBUFFER, initGL.shadowFBO.get(0));
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        initGL.program = eProgramShadow;
+        setProgram(eProgramShadow);
         glBindVertexArray(initGL.vaoShadow.get(0));
-//        drawSnake.draw(initGL.program);
-//        drawFood.draw();
+        drawSnake.draw(InitGL.PROGRAM_TYPE);
+        drawFood.draw();
         glCullFace(GL_BACK);
 
         glUseProgram(initGL.programId);
@@ -134,19 +150,27 @@ public class Draw {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, initGL.shadowMap.get(0));
-        initGL.program = eProgramId;
+        setProgram(eProgramId);
         glBindVertexArray(initGL.vaoMain.get(0));
-//        drawSnake.draw(initGL.program);
-//        drawFood.draw();
+        drawSnake.draw(InitGL.PROGRAM_TYPE);
+        drawFood.draw();
 
-//        drawPlane();
+        drawFence.draw();
+
+        drawPlane();
         drawFreedom();
 
-        drawTest();
+//        drawTestAnimateModel();
     }
+    float angle0 = 0;
 
-    private void drawTest() {
-        ANIMATE_MODEL.animate(initGL.programId);
+    private void drawTestAnimateModel() {
+        setNeedBone(true);
+        if (firstKostyl){
+            firstKostyl = false;
+            ANIMATE_MODEL.setNeedUpdate(0);
+        }
+        ANIMATE_MODEL.animate(initGL.programId, 0);
         setColor(1, 0.3f, 0.3f);
 //        rotateM(angle0, 0, 1, 0);
 //        rotateM(20, 1, 0, 0);
@@ -160,9 +184,10 @@ public class Draw {
         drawTriangles(ANIMATE_MODEL);
         setIdentityM(translate, rotate, scale);
         bindMatrix();
+        setNeedBone(false);
     }
+    boolean firstKostyl = true;
 
-    float angle0 = 0;
 
     private void drawPlane() {
         setColor(0.5f, 0.5f, 0.5f);

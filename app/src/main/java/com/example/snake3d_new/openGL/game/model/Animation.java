@@ -25,7 +25,6 @@ public class Animation {
     }
 
     public void setTime(){
-        needAnimate = true;
         currentTime = System.nanoTime() / Math.pow(10, 6);
         beginTime = currentTime;
     }
@@ -39,44 +38,42 @@ public class Animation {
 
     private void animateDefault(Bone bone, Bone parent, double time, int program) {
         float[] matrix = new float[16];
-        float[] invert = new float[16];
         List<Double> listTime = bone.getTime();
-        for (int i = listTime.size() - 1; i >= 0; i--){
-            if (time >= listTime.get(i)){
-                if (i == listTime.size() - 1){//Если вышли за пределы списка времени
-                    if (parent != null)
-                        Log.d("!!!!!", "ТАК НЕ ДОЖЛНО БЫТЬ, НУ ИЛИ ИНОГДА");
-                    if (typeAnimaion == TypeAnimaion.ONCE){
-                        needAnimate = false;
-                        return;
+        if (listTime != null) {
+            for (int i = listTime.size() - 1; i >= 0; i--) {
+                if (time >= listTime.get(i)) {
+                    if (i == listTime.size() - 1) {//Если вышли за пределы списка времени
+                        if (typeAnimaion == TypeAnimaion.ONCE) {
+                            needAnimate = false;
+                            return;
+                        } else if (typeAnimaion == TypeAnimaion.REPEAT) {
+                            beginTime += listTime.get(i);
+                            animateDefault(bone, parent, currentTime - beginTime, program);//При условии, что у нас один массив времени на все кости, иначе переменная timeBegin должна быть массивом
+                            return;
+                        } else if (typeAnimaion == TypeAnimaion.PENDULUM) {
+                            beginTime += listTime.get(i);
+                            pendulum = true;
+                            double endAnimation = listTime.get(listTime.size() - 1);
+                            animatePendulum(bone, parent, endAnimation - (currentTime - beginTime), program);
+                            return;
+                        } else if (typeAnimaion == TypeAnimaion.ONCE_AND_BACK) {
+                            needAnimate = false;
+                            animateDefault(bone, parent, 0, program);
+                            return;
+                        }
                     }
-                    else if (typeAnimaion == TypeAnimaion.REPEAT) {
-                        beginTime += listTime.get(i);
-                        animateDefault(bone, parent, currentTime - beginTime, program);//При условии, что у нас один массив времени на все кости, иначе переменная timeBegin должна быть массивом
-                        return;
-                    }
-                    else if (typeAnimaion == TypeAnimaion.PENDULUM){
-                        beginTime += listTime.get(i);
-                        pendulum = true;
-                        double endAnimation = listTime.get(listTime.size() - 1);
-                        animatePendulum(bone, parent, endAnimation - (currentTime - beginTime), program);
-                        return;
-                    }
-                    else if (typeAnimaion == TypeAnimaion.ONCE_AND_BACK){
-                        needAnimate = false;
-                        animateDefault(bone, parent, 0, program);
-                        return;
-                    }
+                    double coefficient = (time - listTime.get(i)) / (listTime.get(i + 1) - listTime.get(i));
+                    float[] previousFrame = Arrays.copyOf(bone.getAnimMatrix().get(i), 16);
+                    float[] nextFrame = Arrays.copyOf(bone.getAnimMatrix().get(i + 1), 16);
+                    for (int k = 0; k < 16; k++)
+                        matrix[k] = (float) (previousFrame[k] * (1 - coefficient) + nextFrame[k] * coefficient);
+                    break;
                 }
-                double coefficient = (time - listTime.get(i)) / (listTime.get(i + 1) - listTime.get(i));
-                float[] previousFrame = Arrays.copyOf(bone.getAnimMatrix().get(i), 16);
-                float[] nextFrame = Arrays.copyOf(bone.getAnimMatrix().get(i + 1), 16);
-                for (int k = 0; k < 16; k++)
-                    matrix[k] = (float) (previousFrame[k] * (1 - coefficient) + nextFrame[k] * coefficient);
-                break;
             }
         }
-        multiplyAndDispatch(bone, parent, program, matrix, invert);
+        else
+            matrix = Arrays.copyOf(bone.getBeginBoneMatrix(), 16);
+        multiplyAndDispatch(bone, parent, program, matrix);
         if (bone.childs != null){
             for (Bone child : bone.childs)
                 animateDefault(child, bone, time, program);
@@ -107,14 +104,15 @@ public class Animation {
                 break;
             }
         }
-        multiplyAndDispatch(bone, parent, program, matrix, invert);
+        multiplyAndDispatch(bone, parent, program, matrix);
         if (bone.childs != null){
             for (Bone child : bone.childs)
                 animatePendulum(child, bone, time, program);
         }
     }
 
-    private void multiplyAndDispatch(Bone bone, Bone parent, int program, float[] matrix, float[] invert){
+    private void multiplyAndDispatch(Bone bone, Bone parent, int program, float[] matrix){
+        float[] invert = new float[16];
         if (parent != null)
             Matrix.multiplyMM(matrix, 0, matrix, 0, parent.getMatrixNow(), 0);
         Matrix.multiplyMM(invert, 0, bone.getInvertMatrix(), 0, matrix, 0);

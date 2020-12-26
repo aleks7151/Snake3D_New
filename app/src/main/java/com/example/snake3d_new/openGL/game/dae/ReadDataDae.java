@@ -122,7 +122,7 @@ public class ReadDataDae {
     }
 
     public void getAnimations(List<String> listAnimations, List<String> nameBones) {
-        for (int i = 0; i < bonesAmount; i++) {
+        for (int i = 0; i < listAnimations.size() / 3; i++) {
             List<Double> time = new ArrayList<>();
             List<float[]> boneAnimMatrix = new ArrayList<>();
 

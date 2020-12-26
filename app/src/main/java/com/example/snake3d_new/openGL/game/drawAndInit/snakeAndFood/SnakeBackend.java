@@ -1,11 +1,13 @@
 package com.example.snake3d_new.openGL.game.drawAndInit.snakeAndFood;
 
+import com.example.snake3d_new.openGL.game.drawAndInit.DrawFence;
 import com.example.snake3d_new.openGL.game.drawAndInit.snakeAndFood.utils.Coord;
 import com.example.snake3d_new.openGL.game.drawAndInit.snakeAndFood.utils.Direction;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.snake3d_new.openGL.game.drawAndInit.InitGL.FENCE;
 import static com.example.snake3d_new.openGL.game.drawAndInit.snakeAndFood.utils.Direction.DOWN;
 import static com.example.snake3d_new.openGL.game.drawAndInit.snakeAndFood.utils.Direction.LEFT;
 import static com.example.snake3d_new.openGL.game.drawAndInit.snakeAndFood.utils.Direction.RIGHT;
@@ -25,9 +27,11 @@ public class SnakeBackend {
     public final double BEGIN_SPEED = 0.14;
     private double pixel = 0;
     private DrawFood drawFood;
+    private DrawFence drawFence;
 
-    public SnakeBackend(DrawFood drawFood){
+    public SnakeBackend(DrawFood drawFood, DrawFence drawFence){
         this.drawFood = drawFood;
+        this.drawFence = drawFence;
         for (int i = 0; i < QUANTITY_SNAKE; i++){
             int x = (AMOUNT_X - 1) / 2;
             int y = (AMOUNT_Y - 1) / 2 - i;
@@ -89,7 +93,6 @@ public class SnakeBackend {
         if (!teleportNow.get(0))
             teleportNow.set(0, teleport(listSnake.get(0), speed));
 
-
         checkPixel(speed, speedWithKoef);
     }
 
@@ -124,9 +127,36 @@ public class SnakeBackend {
                 cretinCoord(listBefore.get(i));
                 teleportNow.set(i, false);
             }
+            predictor();
             if (speedWithKoef > speed)
                 move(cretinDouble(speedWithKoef - speed));
         }
+    }
+
+    private void predictor() {
+        Coord futureCord = listSnake.get(0).clone();
+        if (direction == RIGHT)
+            futureCord.plusX(1);
+        else if (direction == LEFT)
+            futureCord.plusX(-1);
+        else if (direction == UP)
+            futureCord.plusY(1);
+        else if (direction == DOWN)
+            futureCord.plusY(-1);
+
+        if (futureCord.getX() < 0)
+            drawFence.animationToLeft[(int)Math.round(listSnake.get(0).getY())] = true;
+        else if (futureCord.getX() > AMOUNT_X - 1d)
+            drawFence.animationToRight[(int)Math.round(listSnake.get(0).getY())] = true;
+        else if (futureCord.getY() < 0)
+            drawFence.animationToBottom[(int)Math.round(listSnake.get(0).getX())] = true;
+        else if (futureCord.getY() > AMOUNT_Y - 1d)
+            drawFence.animationToUp[(int)Math.round(listSnake.get(0).getX())] = true;
+        //Здесь проверить, пересекает ли змейка нужную границу или нет
+        //Когда будет готово, в классе Animation вместо того чтобы считать каждый раз endAnimation, посчитать ее один раз при чтении DAE COLLADA
+        //А также отрефакторить пакеты, перенисти Draw в draw и т.д.
+        //А также вынести класс SankeBackend на урвоень вверх, к Draw, немного переделать логику сообщения классов snakeback and snak and Fence
+        //Буфер в шейдерах - вещь нужная. К иготовлению!
     }
 
     private boolean checkFood() {

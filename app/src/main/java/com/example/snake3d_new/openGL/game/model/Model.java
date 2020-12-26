@@ -2,6 +2,8 @@ package com.example.snake3d_new.openGL.game.model;
 
 import android.util.Log;
 
+import java.util.List;
+
 public class Model {
     public int order;//Для порядковой отрисовки
 
@@ -13,22 +15,27 @@ public class Model {
     public int[] index = null;
 
     public Bone rootBone = null;
-    public Animation animation = null;
+    public List<Animation> animationList = null;
 
-    public void animate(int programId) {
-        if (animation.firstTime) {
-            animation.setTime();
-            animation.firstTime = false;
-        }
+    public void setNeedUpdate(int i){
+        animationList.get(i).needAnimate = true;
+        animationList.get(i).firstTime = true;
+    }
+
+    public void animate(int programId, int num) {
+        Animation animation = animationList.get(num);
         if (animation.needAnimate) {
+            if (animation.firstTime) {
+                animation.setTime();
+                animation.firstTime = false;
+            }
             animation.currentTime = System.nanoTime() / Math.pow(10, 6);
             if (animation.pendulum) {
                 double endAnimation = getEndAnimation(rootBone);
                 if (endAnimation == -1)
                     Log.d("Error", "Не может найти анимацию:(");
                 animation.animate(rootBone, null, endAnimation - (animation.currentTime - animation.beginTime), programId);
-            }
-            else
+            } else
                 animation.animate(rootBone, null, animation.currentTime - animation.beginTime, programId);
         }
     }

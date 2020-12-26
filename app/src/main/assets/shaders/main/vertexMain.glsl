@@ -10,6 +10,7 @@ uniform mat4 projectionViewMatrixShadow;
 uniform mat4 modelMatrix;
 uniform mat4 boneModelMatrix[50];
 uniform mat4 boneNormalMatrix[50];
+uniform bool needBone;
 
 out vec4 positionVariable;
 out vec3 normalVariable;
@@ -21,11 +22,13 @@ void main(){
     bool check = false;
     mat4 animModelMatrix = mat4(0.0);
     mat4 animNormalMatrix = mat4(0.0);
-    for (int i = 0; i < 4; i++){
-        if (index[i] >= 0){
-            check = true;
-            animModelMatrix += weight[i] * boneModelMatrix[index[i]];
-            animNormalMatrix += weight[i] * boneNormalMatrix[index[i]];
+    if (needBone){
+        for (int i = 0; i < 4; i++){
+            if (index[i] >= 0){
+                check = true;
+                animModelMatrix += weight[i] * boneModelMatrix[index[i]];
+                animNormalMatrix += weight[i] * boneNormalMatrix[index[i]];
+            }
         }
     }
     vec4 modelPosition;

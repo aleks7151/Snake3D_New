@@ -79,7 +79,8 @@ public class InitGL {
 
     public int programId;
     public int programShadow;
-    public WhatProgram program;
+    public static WhatProgram PROGRAM_TYPE;
+    public static int PROGRAM_INT;
 
     private FloatBuffer vertexData;
     private FloatBuffer vertexNormal;
@@ -103,6 +104,7 @@ public class InitGL {
     public int locationModelMatrix;
     public int locationNormalMatrix;
     public int locationColor;
+    public int locationNeedBone;
 
     public int locationModelMatrixShadow;
 
@@ -115,6 +117,7 @@ public class InitGL {
     public static Model KUB;
     public static Model PLANE;
     public static Model POINT;
+    public static Model FENCE;
     public static Model ANIMATE_MODEL;
 
     public InitGL(int width, int height){
@@ -157,7 +160,7 @@ public class InitGL {
     private void createViewMatrix() {
         float eyeX = 0;
         float eyeY = 0;
-        float eyeZ = (NEAR / (TOP - BOTTOM)) * (float)AMOUNT_Y * EYE_Z;
+        float eyeZ = (NEAR / (TOP - BOTTOM)) * (float)AMOUNT_Y * EYE_Z + 5;//Естественно, что 5 - это временная переменная, удали ее потом!!!!
         //Рассчет позиции камеры по соотношению треугольников,
         //чтобы все квадраты по вертикали умещались в экран по вертикали тютелька в тютельку
 
@@ -269,6 +272,9 @@ public class InitGL {
         locationColor = glGetUniformLocation(programId, "color");
         glUniform4f(locationColor, 1, 1, 1, 1);
 
+        locationNeedBone = glGetUniformLocation(programId, "needBone");
+        glUniform1i(locationNeedBone, 0);
+
         glUniform1i(glGetUniformLocation(programId, "shadowMap"), 0);
     }
 
@@ -286,21 +292,33 @@ public class InitGL {
         glUniformMatrix4fv(locationModelMatrixShadow, 1, false, modelMatrix, 0);
     }
 
+    private void initFenceAnimation(Model fence) {
+        fence.animationList = new ArrayList<>();
+        for (int i = 0; i < 2 * (AMOUNT_Y + AMOUNT_X); i++)
+            fence.animationList.add(new Animation(TypeAnimaion.ONCE_AND_BACK));
+    }
+
     private void prepareData() {
         KUB = GetDataDae.getModel(assets, "models/kub.dae");
         PLANE = GetDataDae.getModel(assets, "models/plane.dae");
         POINT = GetDataDae.getPoint();
-        ANIMATE_MODEL = GetDataDae.getModel(assets, "models/dick.dae");
-        ANIMATE_MODEL.animation = new Animation(TypeAnimaion.REPEAT);
-        float[] normal = getNotPointsFloat(KUB.normal, PLANE.normal, POINT.normal, ANIMATE_MODEL.normal);
-        float[] texture = getNotPointsFloat(KUB.color, PLANE.color, POINT.color, ANIMATE_MODEL.color);
-        int[] index = getNotPointsInt(KUB.index, PLANE.index, POINT.index, ANIMATE_MODEL.index);
-        float[] weight = getNotPointsFloat(KUB.weight, PLANE.weight, POINT.weight, ANIMATE_MODEL.weight);
-        float[] mesh = getPoints(KUB.position, PLANE.position, POINT.position, ANIMATE_MODEL.position);
+
+        FENCE = GetDataDae.getModel(assets, "models/fence.dae");
+        initFenceAnimation(FENCE);
+        ANIMATE_MODEL = GetDataDae.getModel(assets, "models/loong.dae");
+        ANIMATE_MODEL.animationList = new ArrayList<>();
+        ANIMATE_MODEL.animationList.add(new Animation(TypeAnimaion.REPEAT));
+
+        float[] normal = getNotPointsFloat(KUB.normal, PLANE.normal, POINT.normal, FENCE.normal, ANIMATE_MODEL.normal);
+        float[] texture = getNotPointsFloat(KUB.color, PLANE.color, POINT.color, FENCE.color, ANIMATE_MODEL.color);
+        int[] index = getNotPointsInt(KUB.index, PLANE.index, POINT.index, FENCE.index, ANIMATE_MODEL.index);
+        float[] weight = getNotPointsFloat(KUB.weight, PLANE.weight, POINT.weight, FENCE.weight, ANIMATE_MODEL.weight);
+        float[] mesh = getPoints(KUB.position, PLANE.position, POINT.position, FENCE.position, ANIMATE_MODEL.position);
         KUB.order = 0;
         PLANE.order = 1;
         POINT.order = 2;
-        ANIMATE_MODEL.order = 3;
+        FENCE.order = 3;
+        ANIMATE_MODEL.order = 4;
         vertexPut(mesh, normal, texture, weight, index);
     }
 

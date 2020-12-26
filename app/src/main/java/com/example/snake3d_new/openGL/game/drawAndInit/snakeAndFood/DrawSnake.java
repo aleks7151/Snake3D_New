@@ -73,7 +73,7 @@ public class DrawSnake {
 
     private void snakeMain(List<Coord> list, boolean before){
         for (int i = 0; i < list.size(); i++){
-            if (i == list.size() - 1 && before)
+            if (before && i == list.size() - 1)
                 break;
             Coord coord = list.get(i);
             draw.translateM(X_BEGIN, Y_BEGIN, Z_BEGIN);
